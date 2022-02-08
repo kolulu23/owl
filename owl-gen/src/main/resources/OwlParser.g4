@@ -1,14 +1,16 @@
 grammar OwlParser;
-import OwlCommonLexer, OwlKeywordLexer;
-
-vardef      : T_INT var
-            | T_DOUBLE var
-            | T_BOOLEAN var
-            | T_STRING var
-            | T_ENUM var;
+import OwlLexer;
 
 /**
-* Variables can be local variables like 'foo' or global variables like '@foo'.
-*/
-var         : ID
-            | K_GLB_VAR_PREFIX ID ;
+ * Variable definition
+ */
+vardef      : T_INT ID
+            | T_DOUBLE ID
+            | T_BOOLEAN ID
+            | T_STRING ID
+            | T_ENUM ID;
+
+/**
+ * Global variables
+ */
+glbvar       : K_GLB_VAR_PREFIX ID ;
