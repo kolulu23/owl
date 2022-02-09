@@ -144,10 +144,12 @@ K_GLB_VAR_PREFIX            : '@' ;
 fragment K_FN_PREFIX        : '#' ;
 
 // Signed integers and 0. Note: The actuall integer implementation is totally relies on JVM
-INT             : DIGIT ;
+INT             : '0' | '1'..'9' '0'..'9'* ;
 
 // Sgined double values
-DOUBLE          : DIGIT '.' FIGURE ;
+DOUBLE          : DIGIT+ '.' DIGIT*
+                |        '.' DIGIT+
+                ;
 
 // RAW strings. Unicodes like \u0298 are not translated.
 STRING          : '"' ( '\\"' | . )*? '"';
@@ -166,11 +168,8 @@ ID              : [a-zA-Z0-9_]+ ;
 // Each line must have this ';' to become a statement or expression
 SEMI            : ';'+ ;
 
-// A number of figures, could be with leading zeros
-fragment FIGURE : [0-9]+ ;
-
 // Digits bigger than or eqaul to zero, basically singed integers and 0
-fragment DIGIT  : '0' | '1'..'9' '0'..'9'* ;
+fragment DIGIT  : [0-9] ;
 
 // White spaces
 WS              : [ \t\r\n]+ -> skip ;
