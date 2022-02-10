@@ -3,7 +3,7 @@ package cn.tongdun.owl.context;
 import cn.tongdun.owl.error.OwlSemanticError;
 import cn.tongdun.owl.type.OwlVariable;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Stores variables, semantic errors and expression results.
@@ -43,7 +43,7 @@ public interface OwlContext {
      *
      * @return List of global variables, the list can not be null.
      */
-    List<OwlVariable> listAllGlobalVariables();
+    Collection<OwlVariable> listAllGlobalVariables();
 
     /**
      * Add a semantic error to this context
@@ -51,4 +51,11 @@ public interface OwlContext {
      * @param semanticError semantic error like using undeclared or uninitialized variables
      */
     void addSemanticError(OwlSemanticError semanticError);
+
+    /**
+     * Get all semantic errors.
+     *
+     * @return semantic error list
+     */
+    Collection<OwlSemanticError> listAllSemanticErrors();
 }

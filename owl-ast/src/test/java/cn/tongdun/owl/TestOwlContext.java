@@ -6,6 +6,7 @@ import cn.tongdun.owl.type.OwlVariable;
 import org.junit.platform.commons.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -61,6 +62,11 @@ public class TestOwlContext implements OwlContext {
     @Override
     public void addSemanticError(OwlSemanticError semanticError) {
         this.semanticErrorList.add(semanticError);
+    }
+
+    @Override
+    public Collection<OwlSemanticError> listAllSemanticErrors() {
+        return this.getSemanticErrorList();
     }
 
     public Map<String, OwlVariable> getVariableMap() {
