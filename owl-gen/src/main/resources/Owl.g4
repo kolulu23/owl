@@ -1,5 +1,5 @@
-grammar OwlParser;
-import OwlLexer;
+grammar Owl;
+import OwlBaseLexer;
 
 prog        : statement+ EOF ;
 
@@ -34,7 +34,7 @@ vardef      : T_INT ID '=' expr                                 # Def_Int
  * All kinds of expressions.
  * We diliberately add function call into expression to help us make semantic analysis and evaluation.
  * For function calls, if the type of any given arg doesn't match function definition, error could be thrown.
- * You can find function definitions in 'OwlLexer.g4'.
+ * You can find function definitions in 'OwlBaseLexer.g4'.
  */
 expr        : expr op=(MUL|DIV) expr                            # MulDiv
             | expr op=(ADD|SUB) expr                            # AddSub

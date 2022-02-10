@@ -1,4 +1,4 @@
-lexer grammar OwlLexer;
+lexer grammar OwlBaseLexer;
 
 /********** Arithmetic Operations *********/
 ADD                         : '+' ;

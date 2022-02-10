@@ -1,0 +1,5 @@
+string b = "let's try owl!";
+// Init dynamic array.
+// I am still not sure should I just use a typed array instead.
+list arr = [@m1, @m2, -999, 3.984, b];
+return arr;
