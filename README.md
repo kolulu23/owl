@@ -14,3 +14,6 @@ Here's a diagram of Owl's planned module design:
 - AST Listeners and Visitors
 - Executor and Context abstraction
 - Executor implementation
+
+---
+Owl has nothing to do with the [Web Ontology Language](https://en.wikipedia.org/wiki/Web_Ontology_Language).

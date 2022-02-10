@@ -10,7 +10,7 @@ GT                          : '>' ;
 EQ                          : '==' ;
 LTEQ                        : '<=' ;
 GTEQ                        : '>=' ;
-NOTEQ                       : '!=' ;
+NEQ                         : '!=' ;
 AND                         : 'and' ;
 OR                          : 'or' ;
 
@@ -82,6 +82,15 @@ FN_APPEND                   : K_FN_PREFIX 'append' ;
  * Returns a de-duplicated list, leave original one untouched.
  */
 FN_DEDUP                    : K_FN_PREFIX 'dedup' ;
+
+/**
+ * @arg1 : list
+ * @arg2 : boolean (optional)
+ * @returns : list
+ * Returns a ascending sorted list. Default value of @arg2 is true, meaning that it's doing ascending sort.
+ * This function uses natural orders in this list, for example, 1 > 0, "axe" < "alice", "10" < "2".
+ */
+FN_SORT                     : K_FN_PREFIX 'sort' ;
 
 /**
  * @arg1 : string
@@ -199,6 +208,10 @@ STRING          : '"' ( '\\"' | . )*? '"';
 
 // Keyword of return
 RETURN          : 'return';
+
+// Keyword of if
+IF              : 'if' ;
+ELSE            : 'else' ;
 
 // Boolean lexer rules
 BOOLEAN         : TRUE | FALSE ;

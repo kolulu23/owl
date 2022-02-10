@@ -1,0 +1,12 @@
+double b = 3.1415926;
+@simpleSetMetric;
+if (#isNotNull(b) and b >= 0) {
+    int a = 4;
+    return (a + b) * 2;
+} else {
+    if(@simpleSetMetric >= 0){
+        return @simpleSetMetric;
+    } else {
+        return 0;
+    }
+}
