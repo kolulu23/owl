@@ -5,10 +5,7 @@ import cn.tongdun.owl.error.OwlSemanticError;
 import cn.tongdun.owl.type.OwlVariable;
 import org.junit.platform.commons.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author liutianlu
@@ -30,6 +27,12 @@ public class TestOwlContext implements OwlContext {
      * Possible semantic errors leading to undefined behaviour.
      */
     private List<OwlSemanticError> semanticErrorList;
+
+    public TestOwlContext() {
+        this.setVariableMap(new HashMap<>());
+        this.setGlobalVariableMap(new HashMap<>());
+        this.setSemanticErrorList(new ArrayList<>());
+    }
 
     @Override
     public OwlVariable getVariable(String id) {

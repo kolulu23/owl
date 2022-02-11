@@ -20,56 +20,43 @@ public class OwlVariableListener extends OwlBaseListener {
     @Override
     public void enterDef_Int(OwlParser.Def_IntContext ctx) {
         String id = ctx.ID().getText();
-        OwlIntVariable var = new OwlIntVariable(id, OwlType.INT);
+        OwlIntVariable var = new OwlIntVariable(id);
         owlContext.addVariable(var, false);
     }
 
     @Override
     public void enterDef_Double(OwlParser.Def_DoubleContext ctx) {
         String id = ctx.ID().getText();
-        OwlDoubleVariable var = new OwlDoubleVariable(id, OwlType.DOUBLE);
+        OwlDoubleVariable var = new OwlDoubleVariable(id);
         owlContext.addVariable(var, false);
     }
 
     @Override
     public void enterDef_Boolean(OwlParser.Def_BooleanContext ctx) {
         String id = ctx.ID().getText();
-        OwlBoolVariable var = new OwlBoolVariable(id, OwlType.BOOLEAN);
+        OwlBoolVariable var = new OwlBoolVariable(id);
         owlContext.addVariable(var, false);
     }
 
     @Override
     public void enterDef_String(OwlParser.Def_StringContext ctx) {
         String id = ctx.ID().getText();
-        OwlStringVariable var = new OwlStringVariable(id, OwlType.STRING);
+        OwlStringVariable var = new OwlStringVariable(id);
         owlContext.addVariable(var, false);
     }
 
     @Override
     public void enterDef_List(OwlParser.Def_ListContext ctx) {
         String id = ctx.ID().getText();
-        OwlListVariable var = new OwlListVariable(id, OwlType.LIST);
+        OwlListVariable var = new OwlListVariable(id);
         owlContext.addVariable(var, false);
     }
 
     @Override
     public void enterVar_GlobalVar(OwlParser.Var_GlobalVarContext ctx) {
         String globalId = ctx.getText();
-        OwlUnknownVariable var = new OwlUnknownVariable(globalId);
+        OwlUnknownVariable<?> var = new OwlUnknownVariable<>(globalId);
         owlContext.addVariable(var, true);
-    }
-
-    // TODO move to visitor
-    @Override
-    public void enterStat_Assign(OwlParser.Stat_AssignContext ctx) {
-        String id = ctx.ID().getText();
-        if (!owlContext.isVariableDeclared(id)) {
-            OwlSemanticError semanticError = new OwlSemanticError();
-            semanticError.setMessage("Variable " + id + " not declared");
-            semanticError.setLine(ctx.getStart().getLine());
-            semanticError.setCodeSegment(ctx.getRuleContext().getText());
-            owlContext.addSemanticError(semanticError);
-        }
     }
 
     public OwlContext getOwlContext() {

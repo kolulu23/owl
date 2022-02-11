@@ -1,17 +1,17 @@
 package cn.tongdun.owl;
 
-import cn.tongdun.owl.parse.OwlSyntaxErrorListener;
-import cn.tongdun.owl.generated.OwlLexer;
 import cn.tongdun.owl.generated.OwlParser;
+import cn.tongdun.owl.parse.OwlSyntaxErrorListener;
 import cn.tongdun.owl.parse.OwlVariableListener;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import static cn.tongdun.owl.OwlTestResource.*;
+import static cn.tongdun.owl.OwlTestUtil.getParserFromFile;
+import static cn.tongdun.owl.OwlTestUtil.getParserFromString;
 
 /**
  * @author liutianlu
@@ -19,16 +19,6 @@ import java.util.HashMap;
  */
 public class SyntaxTest {
 
-    public static final String INIT = "int a = 0; " +
-            "double b = 2.0; " +
-            "boolean c = false; " +
-            "string d = \"kek\"; " +
-            "list e = [a, b, d, true, false];" +
-            "int m = @metric_1 + 3; k = m;";
-
-    public static final String INIT_ERROR = ";ino a = 0";
-
-    public static final String PATH_TO_IFELSE = "/Users/liutianlu/Projects/JavaProjects/owl/owl-ast/src/test/java/cn/tongdun/owl/example/ifelse.txt";
 
     @Test
     public void testBasicInit() {
@@ -71,23 +61,5 @@ public class SyntaxTest {
         parser.addErrorListener(errorListener);
         parser.prog();
         System.out.println(errorListener.getSyntaxErrorList());
-    }
-
-    public OwlParser getParserFromString(String input) {
-        OwlLexer lexer = new OwlLexer(CharStreams.fromString(input));
-        CommonTokenStream tokenStream = new CommonTokenStream(lexer);
-        return new OwlParser(tokenStream);
-    }
-
-    public OwlParser getParserFromFile(String path){
-        OwlLexer lexer = null;
-        try {
-            lexer = new OwlLexer(CharStreams.fromFileName(path));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        assert lexer != null;
-        CommonTokenStream tokenStream = new CommonTokenStream(lexer);
-        return new OwlParser(tokenStream);
     }
 }
