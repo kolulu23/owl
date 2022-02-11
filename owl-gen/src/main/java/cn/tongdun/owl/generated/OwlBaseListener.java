@@ -952,7 +952,7 @@ public class OwlBaseListener implements OwlListener {
      * <p>The default implementation does nothing.</p>
      */
     @Override
-    public void enterArr(OwlParser.ArrContext ctx) {
+    public void enterArr_Sized(OwlParser.Arr_SizedContext ctx) {
     }
 
     /**
@@ -961,7 +961,7 @@ public class OwlBaseListener implements OwlListener {
      * <p>The default implementation does nothing.</p>
      */
     @Override
-    public void exitArr(OwlParser.ArrContext ctx) {
+    public void exitArr_Sized(OwlParser.Arr_SizedContext ctx) {
     }
 
     /**
@@ -970,7 +970,7 @@ public class OwlBaseListener implements OwlListener {
      * <p>The default implementation does nothing.</p>
      */
     @Override
-    public void enterLiteral(OwlParser.LiteralContext ctx) {
+    public void enterArr_Empty(OwlParser.Arr_EmptyContext ctx) {
     }
 
     /**
@@ -979,7 +979,115 @@ public class OwlBaseListener implements OwlListener {
      * <p>The default implementation does nothing.</p>
      */
     @Override
-    public void exitLiteral(OwlParser.LiteralContext ctx) {
+    public void exitArr_Empty(OwlParser.Arr_EmptyContext ctx) {
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override
+    public void enterLit_Int(OwlParser.Lit_IntContext ctx) {
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override
+    public void exitLit_Int(OwlParser.Lit_IntContext ctx) {
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override
+    public void enterLit_Neg_Int(OwlParser.Lit_Neg_IntContext ctx) {
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override
+    public void exitLit_Neg_Int(OwlParser.Lit_Neg_IntContext ctx) {
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override
+    public void enterLit_Double(OwlParser.Lit_DoubleContext ctx) {
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override
+    public void exitLit_Double(OwlParser.Lit_DoubleContext ctx) {
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override
+    public void enterLit_Neg_Double(OwlParser.Lit_Neg_DoubleContext ctx) {
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override
+    public void exitLit_Neg_Double(OwlParser.Lit_Neg_DoubleContext ctx) {
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override
+    public void enterLit_String(OwlParser.Lit_StringContext ctx) {
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override
+    public void exitLit_String(OwlParser.Lit_StringContext ctx) {
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override
+    public void enterLit_Boolean(OwlParser.Lit_BooleanContext ctx) {
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override
+    public void exitLit_Boolean(OwlParser.Lit_BooleanContext ctx) {
     }
 
     /**

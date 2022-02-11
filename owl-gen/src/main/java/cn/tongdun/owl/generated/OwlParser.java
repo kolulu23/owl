@@ -3231,14 +3231,6 @@ public class OwlParser extends Parser {
     }
 
     public static class ArrContext extends ParserRuleContext {
-        public List<VarContext> var() {
-            return getRuleContexts(VarContext.class);
-        }
-
-        public VarContext var(int i) {
-            return getRuleContext(VarContext.class, i);
-        }
-
         public ArrContext(ParserRuleContext parent, int invokingState) {
             super(parent, invokingState);
         }
@@ -3248,19 +3240,62 @@ public class OwlParser extends Parser {
             return RULE_arr;
         }
 
+        public ArrContext() {
+        }
+
+        public void copyFrom(ArrContext ctx) {
+            super.copyFrom(ctx);
+        }
+    }
+
+    public static class Arr_EmptyContext extends ArrContext {
+        public Arr_EmptyContext(ArrContext ctx) {
+            copyFrom(ctx);
+        }
+
         @Override
         public void enterRule(ParseTreeListener listener) {
-            if (listener instanceof OwlListener) ((OwlListener) listener).enterArr(this);
+            if (listener instanceof OwlListener) ((OwlListener) listener).enterArr_Empty(this);
         }
 
         @Override
         public void exitRule(ParseTreeListener listener) {
-            if (listener instanceof OwlListener) ((OwlListener) listener).exitArr(this);
+            if (listener instanceof OwlListener) ((OwlListener) listener).exitArr_Empty(this);
         }
 
         @Override
         public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-            if (visitor instanceof OwlVisitor) return ((OwlVisitor<? extends T>) visitor).visitArr(this);
+            if (visitor instanceof OwlVisitor) return ((OwlVisitor<? extends T>) visitor).visitArr_Empty(this);
+            else return visitor.visitChildren(this);
+        }
+    }
+
+    public static class Arr_SizedContext extends ArrContext {
+        public List<VarContext> var() {
+            return getRuleContexts(VarContext.class);
+        }
+
+        public VarContext var(int i) {
+            return getRuleContext(VarContext.class, i);
+        }
+
+        public Arr_SizedContext(ArrContext ctx) {
+            copyFrom(ctx);
+        }
+
+        @Override
+        public void enterRule(ParseTreeListener listener) {
+            if (listener instanceof OwlListener) ((OwlListener) listener).enterArr_Sized(this);
+        }
+
+        @Override
+        public void exitRule(ParseTreeListener listener) {
+            if (listener instanceof OwlListener) ((OwlListener) listener).exitArr_Sized(this);
+        }
+
+        @Override
+        public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+            if (visitor instanceof OwlVisitor) return ((OwlVisitor<? extends T>) visitor).visitArr_Sized(this);
             else return visitor.visitChildren(this);
         }
     }
@@ -3274,6 +3309,7 @@ public class OwlParser extends Parser {
             _errHandler.sync(this);
             switch (getInterpreter().adaptivePredict(_input, 17, _ctx)) {
                 case 1:
+                    _localctx = new Arr_SizedContext(_localctx);
                     enterOuterAlt(_localctx, 1);
                 {
                     setState(328);
@@ -3301,6 +3337,7 @@ public class OwlParser extends Parser {
                 }
                 break;
                 case 2:
+                    _localctx = new Arr_EmptyContext(_localctx);
                     enterOuterAlt(_localctx, 2);
                 {
                     setState(339);
@@ -3321,26 +3358,6 @@ public class OwlParser extends Parser {
     }
 
     public static class LiteralContext extends ParserRuleContext {
-        public TerminalNode INT() {
-            return getToken(OwlParser.INT, 0);
-        }
-
-        public TerminalNode SUB() {
-            return getToken(OwlParser.SUB, 0);
-        }
-
-        public TerminalNode DOUBLE() {
-            return getToken(OwlParser.DOUBLE, 0);
-        }
-
-        public TerminalNode STRING() {
-            return getToken(OwlParser.STRING, 0);
-        }
-
-        public TerminalNode BOOLEAN() {
-            return getToken(OwlParser.BOOLEAN, 0);
-        }
-
         public LiteralContext(ParserRuleContext parent, int invokingState) {
             super(parent, invokingState);
         }
@@ -3350,19 +3367,174 @@ public class OwlParser extends Parser {
             return RULE_literal;
         }
 
+        public LiteralContext() {
+        }
+
+        public void copyFrom(LiteralContext ctx) {
+            super.copyFrom(ctx);
+        }
+    }
+
+    public static class Lit_Neg_DoubleContext extends LiteralContext {
+        public TerminalNode SUB() {
+            return getToken(OwlParser.SUB, 0);
+        }
+
+        public TerminalNode DOUBLE() {
+            return getToken(OwlParser.DOUBLE, 0);
+        }
+
+        public Lit_Neg_DoubleContext(LiteralContext ctx) {
+            copyFrom(ctx);
+        }
+
         @Override
         public void enterRule(ParseTreeListener listener) {
-            if (listener instanceof OwlListener) ((OwlListener) listener).enterLiteral(this);
+            if (listener instanceof OwlListener) ((OwlListener) listener).enterLit_Neg_Double(this);
         }
 
         @Override
         public void exitRule(ParseTreeListener listener) {
-            if (listener instanceof OwlListener) ((OwlListener) listener).exitLiteral(this);
+            if (listener instanceof OwlListener) ((OwlListener) listener).exitLit_Neg_Double(this);
         }
 
         @Override
         public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-            if (visitor instanceof OwlVisitor) return ((OwlVisitor<? extends T>) visitor).visitLiteral(this);
+            if (visitor instanceof OwlVisitor) return ((OwlVisitor<? extends T>) visitor).visitLit_Neg_Double(this);
+            else return visitor.visitChildren(this);
+        }
+    }
+
+    public static class Lit_IntContext extends LiteralContext {
+        public TerminalNode INT() {
+            return getToken(OwlParser.INT, 0);
+        }
+
+        public Lit_IntContext(LiteralContext ctx) {
+            copyFrom(ctx);
+        }
+
+        @Override
+        public void enterRule(ParseTreeListener listener) {
+            if (listener instanceof OwlListener) ((OwlListener) listener).enterLit_Int(this);
+        }
+
+        @Override
+        public void exitRule(ParseTreeListener listener) {
+            if (listener instanceof OwlListener) ((OwlListener) listener).exitLit_Int(this);
+        }
+
+        @Override
+        public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+            if (visitor instanceof OwlVisitor) return ((OwlVisitor<? extends T>) visitor).visitLit_Int(this);
+            else return visitor.visitChildren(this);
+        }
+    }
+
+    public static class Lit_Neg_IntContext extends LiteralContext {
+        public TerminalNode SUB() {
+            return getToken(OwlParser.SUB, 0);
+        }
+
+        public TerminalNode INT() {
+            return getToken(OwlParser.INT, 0);
+        }
+
+        public Lit_Neg_IntContext(LiteralContext ctx) {
+            copyFrom(ctx);
+        }
+
+        @Override
+        public void enterRule(ParseTreeListener listener) {
+            if (listener instanceof OwlListener) ((OwlListener) listener).enterLit_Neg_Int(this);
+        }
+
+        @Override
+        public void exitRule(ParseTreeListener listener) {
+            if (listener instanceof OwlListener) ((OwlListener) listener).exitLit_Neg_Int(this);
+        }
+
+        @Override
+        public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+            if (visitor instanceof OwlVisitor) return ((OwlVisitor<? extends T>) visitor).visitLit_Neg_Int(this);
+            else return visitor.visitChildren(this);
+        }
+    }
+
+    public static class Lit_StringContext extends LiteralContext {
+        public TerminalNode STRING() {
+            return getToken(OwlParser.STRING, 0);
+        }
+
+        public Lit_StringContext(LiteralContext ctx) {
+            copyFrom(ctx);
+        }
+
+        @Override
+        public void enterRule(ParseTreeListener listener) {
+            if (listener instanceof OwlListener) ((OwlListener) listener).enterLit_String(this);
+        }
+
+        @Override
+        public void exitRule(ParseTreeListener listener) {
+            if (listener instanceof OwlListener) ((OwlListener) listener).exitLit_String(this);
+        }
+
+        @Override
+        public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+            if (visitor instanceof OwlVisitor) return ((OwlVisitor<? extends T>) visitor).visitLit_String(this);
+            else return visitor.visitChildren(this);
+        }
+    }
+
+    public static class Lit_DoubleContext extends LiteralContext {
+        public TerminalNode DOUBLE() {
+            return getToken(OwlParser.DOUBLE, 0);
+        }
+
+        public Lit_DoubleContext(LiteralContext ctx) {
+            copyFrom(ctx);
+        }
+
+        @Override
+        public void enterRule(ParseTreeListener listener) {
+            if (listener instanceof OwlListener) ((OwlListener) listener).enterLit_Double(this);
+        }
+
+        @Override
+        public void exitRule(ParseTreeListener listener) {
+            if (listener instanceof OwlListener) ((OwlListener) listener).exitLit_Double(this);
+        }
+
+        @Override
+        public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+            if (visitor instanceof OwlVisitor) return ((OwlVisitor<? extends T>) visitor).visitLit_Double(this);
+            else return visitor.visitChildren(this);
+        }
+    }
+
+    public static class Lit_BooleanContext extends LiteralContext {
+        public TerminalNode BOOLEAN() {
+            return getToken(OwlParser.BOOLEAN, 0);
+        }
+
+        public Lit_BooleanContext(LiteralContext ctx) {
+            copyFrom(ctx);
+        }
+
+        @Override
+        public void enterRule(ParseTreeListener listener) {
+            if (listener instanceof OwlListener) ((OwlListener) listener).enterLit_Boolean(this);
+        }
+
+        @Override
+        public void exitRule(ParseTreeListener listener) {
+            if (listener instanceof OwlListener) ((OwlListener) listener).exitLit_Boolean(this);
+        }
+
+        @Override
+        public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+            if (visitor instanceof OwlVisitor) return ((OwlVisitor<? extends T>) visitor).visitLit_Boolean(this);
             else return visitor.visitChildren(this);
         }
     }
@@ -3375,6 +3547,7 @@ public class OwlParser extends Parser {
             _errHandler.sync(this);
             switch (getInterpreter().adaptivePredict(_input, 18, _ctx)) {
                 case 1:
+                    _localctx = new Lit_IntContext(_localctx);
                     enterOuterAlt(_localctx, 1);
                 {
                     setState(343);
@@ -3382,6 +3555,7 @@ public class OwlParser extends Parser {
                 }
                 break;
                 case 2:
+                    _localctx = new Lit_Neg_IntContext(_localctx);
                     enterOuterAlt(_localctx, 2);
                 {
                     setState(344);
@@ -3391,6 +3565,7 @@ public class OwlParser extends Parser {
                 }
                 break;
                 case 3:
+                    _localctx = new Lit_DoubleContext(_localctx);
                     enterOuterAlt(_localctx, 3);
                 {
                     setState(346);
@@ -3398,6 +3573,7 @@ public class OwlParser extends Parser {
                 }
                 break;
                 case 4:
+                    _localctx = new Lit_Neg_DoubleContext(_localctx);
                     enterOuterAlt(_localctx, 4);
                 {
                     setState(347);
@@ -3407,6 +3583,7 @@ public class OwlParser extends Parser {
                 }
                 break;
                 case 5:
+                    _localctx = new Lit_StringContext(_localctx);
                     enterOuterAlt(_localctx, 5);
                 {
                     setState(349);
@@ -3414,6 +3591,7 @@ public class OwlParser extends Parser {
                 }
                 break;
                 case 6:
+                    _localctx = new Lit_BooleanContext(_localctx);
                     enterOuterAlt(_localctx, 6);
                 {
                     setState(350);

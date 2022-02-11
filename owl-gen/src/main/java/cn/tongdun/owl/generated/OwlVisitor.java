@@ -172,7 +172,7 @@ public interface OwlVisitor<T> extends ParseTreeVisitor<T> {
 
     /**
      * Visit a parse tree produced by the {@code Fn_Std}
-     * labeled alternative in {@link OwlParser#expr()()}.
+     * labeled alternative in {@link OwlParser#expr()}.
      *
      * @param ctx the parse tree
      * @return the visitor result
@@ -181,7 +181,7 @@ public interface OwlVisitor<T> extends ParseTreeVisitor<T> {
 
     /**
      * Visit a parse tree produced by the {@code BoolExpr}
-     * labeled alternative in {@link OwlParser#expr()()}.
+     * labeled alternative in {@link OwlParser#expr()}.
      *
      * @param ctx the parse tree
      * @return the visitor result
@@ -190,7 +190,7 @@ public interface OwlVisitor<T> extends ParseTreeVisitor<T> {
 
     /**
      * Visit a parse tree produced by the {@code Fn_Round}
-     * labeled alternative in {@link OwlParser#expr()()}.
+     * labeled alternative in {@link OwlParser#expr()}.
      *
      * @param ctx the parse tree
      * @return the visitor result
@@ -199,7 +199,7 @@ public interface OwlVisitor<T> extends ParseTreeVisitor<T> {
 
     /**
      * Visit a parse tree produced by the {@code MulDiv}
-     * labeled alternative in {@link OwlParser#expr()()}.
+     * labeled alternative in {@link OwlParser#expr()}.
      *
      * @param ctx the parse tree
      * @return the visitor result
@@ -477,20 +477,76 @@ public interface OwlVisitor<T> extends ParseTreeVisitor<T> {
     T visitVar_Literal(OwlParser.Var_LiteralContext ctx);
 
     /**
-     * Visit a parse tree produced by {@link OwlParser#arr}.
+     * Visit a parse tree produced by the {@code Arr_Sized}
+     * labeled alternative in {@link OwlParser#arr}.
      *
      * @param ctx the parse tree
      * @return the visitor result
      */
-    T visitArr(OwlParser.ArrContext ctx);
+    T visitArr_Sized(OwlParser.Arr_SizedContext ctx);
 
     /**
-     * Visit a parse tree produced by {@link OwlParser#literal}.
+     * Visit a parse tree produced by the {@code Arr_Empty}
+     * labeled alternative in {@link OwlParser#arr}.
      *
      * @param ctx the parse tree
      * @return the visitor result
      */
-    T visitLiteral(OwlParser.LiteralContext ctx);
+    T visitArr_Empty(OwlParser.Arr_EmptyContext ctx);
+
+    /**
+     * Visit a parse tree produced by the {@code Lit_Int}
+     * labeled alternative in {@link OwlParser#literal}.
+     *
+     * @param ctx the parse tree
+     * @return the visitor result
+     */
+    T visitLit_Int(OwlParser.Lit_IntContext ctx);
+
+    /**
+     * Visit a parse tree produced by the {@code Lit_Neg_Int}
+     * labeled alternative in {@link OwlParser#literal}.
+     *
+     * @param ctx the parse tree
+     * @return the visitor result
+     */
+    T visitLit_Neg_Int(OwlParser.Lit_Neg_IntContext ctx);
+
+    /**
+     * Visit a parse tree produced by the {@code Lit_Double}
+     * labeled alternative in {@link OwlParser#literal}.
+     *
+     * @param ctx the parse tree
+     * @return the visitor result
+     */
+    T visitLit_Double(OwlParser.Lit_DoubleContext ctx);
+
+    /**
+     * Visit a parse tree produced by the {@code Lit_Neg_Double}
+     * labeled alternative in {@link OwlParser#literal}.
+     *
+     * @param ctx the parse tree
+     * @return the visitor result
+     */
+    T visitLit_Neg_Double(OwlParser.Lit_Neg_DoubleContext ctx);
+
+    /**
+     * Visit a parse tree produced by the {@code Lit_String}
+     * labeled alternative in {@link OwlParser#literal}.
+     *
+     * @param ctx the parse tree
+     * @return the visitor result
+     */
+    T visitLit_String(OwlParser.Lit_StringContext ctx);
+
+    /**
+     * Visit a parse tree produced by the {@code Lit_Boolean}
+     * labeled alternative in {@link OwlParser#literal}.
+     *
+     * @param ctx the parse tree
+     * @return the visitor result
+     */
+    T visitLit_Boolean(OwlParser.Lit_BooleanContext ctx);
 
     /**
      * Visit a parse tree produced by {@link OwlParser#glbvar}.

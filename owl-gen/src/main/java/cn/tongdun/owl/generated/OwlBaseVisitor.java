@@ -590,7 +590,7 @@ public class OwlBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements Ow
      * {@link #visitChildren} on {@code ctx}.</p>
      */
     @Override
-    public T visitArr(OwlParser.ArrContext ctx) {
+    public T visitArr_Sized(OwlParser.Arr_SizedContext ctx) {
         return visitChildren(ctx);
     }
 
@@ -601,7 +601,73 @@ public class OwlBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements Ow
      * {@link #visitChildren} on {@code ctx}.</p>
      */
     @Override
-    public T visitLiteral(OwlParser.LiteralContext ctx) {
+    public T visitArr_Empty(OwlParser.Arr_EmptyContext ctx) {
+        return visitChildren(ctx);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation returns the result of calling
+     * {@link #visitChildren} on {@code ctx}.</p>
+     */
+    @Override
+    public T visitLit_Int(OwlParser.Lit_IntContext ctx) {
+        return visitChildren(ctx);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation returns the result of calling
+     * {@link #visitChildren} on {@code ctx}.</p>
+     */
+    @Override
+    public T visitLit_Neg_Int(OwlParser.Lit_Neg_IntContext ctx) {
+        return visitChildren(ctx);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation returns the result of calling
+     * {@link #visitChildren} on {@code ctx}.</p>
+     */
+    @Override
+    public T visitLit_Double(OwlParser.Lit_DoubleContext ctx) {
+        return visitChildren(ctx);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation returns the result of calling
+     * {@link #visitChildren} on {@code ctx}.</p>
+     */
+    @Override
+    public T visitLit_Neg_Double(OwlParser.Lit_Neg_DoubleContext ctx) {
+        return visitChildren(ctx);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation returns the result of calling
+     * {@link #visitChildren} on {@code ctx}.</p>
+     */
+    @Override
+    public T visitLit_String(OwlParser.Lit_StringContext ctx) {
+        return visitChildren(ctx);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation returns the result of calling
+     * {@link #visitChildren} on {@code ctx}.</p>
+     */
+    @Override
+    public T visitLit_Boolean(OwlParser.Lit_BooleanContext ctx) {
         return visitChildren(ctx);
     }
 

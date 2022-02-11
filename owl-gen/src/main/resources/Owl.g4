@@ -81,18 +81,19 @@ var         : ID                                                # Var_Identifier
             | literal                                           # Var_Literal
             ;
 
-arr         : '[' var (',' var)* ']'
-            | '[' ']' ;
+arr         : '[' var (',' var)* ']'                            # Arr_Sized
+            | '[' ']'                                           # Arr_Empty
+            ;
 
 /**
  * Primitive type literals
  */
-literal     : INT
-            | '-' INT
-            | DOUBLE
-            | '-' DOUBLE
-            | STRING
-            | BOOLEAN
+literal     : INT                                               # Lit_Int
+            | '-' INT                                           # Lit_Neg_Int
+            | DOUBLE                                            # Lit_Double
+            | '-' DOUBLE                                        # Lit_Neg_Double
+            | STRING                                            # Lit_String
+            | BOOLEAN                                           # Lit_Boolean
             ;
 
 /**
