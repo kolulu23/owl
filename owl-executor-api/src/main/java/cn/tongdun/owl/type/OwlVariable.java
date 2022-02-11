@@ -21,4 +21,17 @@ public abstract class OwlVariable {
     public abstract String getId();
 
     public abstract OwlType getType();
+
+    public abstract void setId(String id);
+
+    public abstract void setType(OwlType type);
+
+    /**
+     * Get concrete class to perform typed operations.
+     *
+     * @return An OwlUnknownVariable that could be any of its subclass or just this base class.
+     */
+    public OwlUnknownVariable<?> getInner() {
+        return (OwlUnknownVariable<?>) this;
+    }
 }

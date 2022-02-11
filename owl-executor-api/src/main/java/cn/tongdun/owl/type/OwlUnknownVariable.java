@@ -1,6 +1,8 @@
 package cn.tongdun.owl.type;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * Base class for other typed variables.
@@ -9,9 +11,16 @@ import java.io.Serializable;
  * @author liutianlu
  * <br/>Created 2022/2/10 6:27 PM
  */
-public class OwlUnknownVariable extends OwlVariable implements Serializable {
+public class OwlUnknownVariable<T> extends OwlVariable implements Serializable {
 
     private static final long serialVersionUID = 261171854254277961L;
+
+    protected T value;
+
+    public OwlUnknownVariable() {
+        // Literal variable that has not been assigned to anything
+        this.id = "<literal>";
+    }
 
     public OwlUnknownVariable(String id) {
         this.id = id;
@@ -26,6 +35,72 @@ public class OwlUnknownVariable extends OwlVariable implements Serializable {
     @Override
     public OwlType getType() {
         return this.type;
+    }
+
+    @Override
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    @Override
+    public void setType(OwlType type) {
+        this.type = type;
+    }
+
+    /**
+     * If you already know the type of inner value, you can call this function to get you
+     * the value. Use this function only if you are calling through subclasses.
+     *
+     * @return typed value
+     */
+    public T getValue() {
+        return value;
+    }
+
+    public void setValue(T value) {
+        this.value = value;
+    }
+
+    /**
+     * This function tries to get an integer from this variable.
+     * If this variable is not a {@link OwlIntVariable} or value is null, then null will be returned.
+     *
+     * @return integer value, could be null
+     */
+    public Integer getIntValue() {
+        if (OwlType.INT.equals(this.getType())) {
+            return value == null ? null : (Integer) value;
+        }
+        return null;
+    }
+
+    public BigDecimal getDoubleValue() {
+        if (OwlType.DOUBLE.equals(this.getType())) {
+            return value == null ? null : (BigDecimal) value;
+        }
+        return null;
+    }
+
+    public String getStringValue() {
+        if (OwlType.STRING.equals(this.getType())) {
+            return value == null ? null : (String) value;
+        }
+        return null;
+    }
+
+    public Boolean getBoolValue() {
+        if (OwlType.BOOLEAN.equals(this.getType())) {
+            return value == null ? null : (Boolean) value;
+        }
+        return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<? extends OwlVariable> getListValue() {
+        if (OwlType.LIST.equals(this.getType())) {
+            return value == null ? null : (List<? extends OwlVariable>) value;
+        }
+        return null;
     }
 
     @Override

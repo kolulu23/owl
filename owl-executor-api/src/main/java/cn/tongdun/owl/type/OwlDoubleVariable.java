@@ -6,22 +6,21 @@ import java.math.BigDecimal;
  * @author liutianlu
  * <br/>Created 2022/2/10 5:54 PM
  */
-public class OwlDoubleVariable extends OwlUnknownVariable {
+public class OwlDoubleVariable extends OwlUnknownVariable<BigDecimal> {
     private static final long serialVersionUID = 9110309677935297177L;
 
-    private BigDecimal value;
+    public OwlDoubleVariable() {
+        super();
+        this.type = OwlType.DOUBLE;
+    }
 
-    public OwlDoubleVariable(String id, OwlType type) {
+    public OwlDoubleVariable(String id) {
         super(id);
-        this.id = id;
-        this.type = type;
+        this.type = OwlType.DOUBLE;
     }
 
-    public BigDecimal getValue() {
-        return value;
-    }
-
-    public void setValue(BigDecimal value) {
+    public OwlDoubleVariable(BigDecimal value) {
+        this.type = OwlType.DOUBLE;
         this.value = value;
     }
 

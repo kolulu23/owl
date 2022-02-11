@@ -4,36 +4,28 @@ package cn.tongdun.owl.type;
  * @author liutianlu
  * <br/>Created 2022/2/10 5:50 PM
  */
-public class OwlIntVariable extends OwlVariable {
+public class OwlIntVariable extends OwlUnknownVariable<Integer> {
     private static final long serialVersionUID = -954272864570577715L;
 
-    private Integer value;
-
-    public OwlIntVariable(String id, OwlType type) {
-        this.id = id;
-        this.type = type;
+    public OwlIntVariable() {
+        super();
+        this.type = OwlType.INT;
     }
 
-    public Integer getValue() {
-        return value;
+    public OwlIntVariable(String id) {
+        super(id);
+        this.type = OwlType.INT;
     }
 
-    public void setValue(Integer value) {
+    public OwlIntVariable(Integer value) {
+        this.type = OwlType.INT;
         this.value = value;
-    }
-
-    public OwlType getType() {
-        return this.type;
-    }
-
-    public String getId() {
-        return this.id;
     }
 
     @Override
     public String toString() {
         return "OwlIntVariable{" +
-                "value=" + value +
+                "value=" + getValue() +
                 ", id='" + id + '\'' +
                 ", type=" + type +
                 '}';

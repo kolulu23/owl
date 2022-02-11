@@ -4,22 +4,22 @@ package cn.tongdun.owl.type;
  * @author liutianlu
  * <br/>Created 2022/2/10 5:55 PM
  */
-public class OwlBoolVariable extends OwlUnknownVariable {
+public class OwlBoolVariable extends OwlUnknownVariable<Boolean> {
     private static final long serialVersionUID = 2231998931012550231L;
-    private Boolean value;
 
-    public OwlBoolVariable(String id, OwlType type) {
-        super(id);
-        this.id = id;
-        this.type = type;
+    public OwlBoolVariable() {
+        super();
+        this.type = OwlType.BOOLEAN;
     }
 
-    public Boolean getValue() {
-        return value;
-    }
-
-    public void setValue(Boolean value) {
+    public OwlBoolVariable(Boolean value) {
+        this.type = OwlType.BOOLEAN;
         this.value = value;
+    }
+
+    public OwlBoolVariable(String id) {
+        super(id);
+        this.type = OwlType.BOOLEAN;
     }
 
     @Override

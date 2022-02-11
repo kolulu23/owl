@@ -3,36 +3,29 @@ package cn.tongdun.owl.type;
 import java.util.List;
 
 /**
+ * Variable for storing 1-d array.
+ * Item must be a {@link OwlVariable} subclass except {@link OwlListVariable} itself.
+ * But we don't limit ourselves here since there's no parser rule for nested list.
+ *
  * @author liutianlu
  * <br/>Created 2022/2/10 5:56 PM
  */
-public class OwlListVariable extends OwlUnknownVariable {
+public class OwlListVariable extends OwlUnknownVariable<List<? extends OwlVariable>> {
     private static final long serialVersionUID = 938435808718940169L;
 
-    /**
-     * Item must be a {@link OwlVariable} subclass except {@link OwlListVariable} itself.
-     * But we don't limit ourselves here since there's no parser rule for nested list.
-     */
-    private List<? extends OwlVariable> valueList;
+    public OwlListVariable() {
+        this.type = OwlType.LIST;
+    }
 
-    public OwlListVariable(String id, OwlType type) {
+    public OwlListVariable(String id) {
         super(id);
-        this.id = id;
-        this.type = type;
-    }
-
-    public List<? extends OwlVariable> getValueList() {
-        return valueList;
-    }
-
-    public void setValueList(List<? extends OwlVariable> valueList) {
-        this.valueList = valueList;
+        this.type = OwlType.LIST;
     }
 
     @Override
     public String toString() {
         return "OwlListVariable{" +
-                "valueList=" + valueList +
+                "valueList=" + value +
                 ", id='" + id + '\'' +
                 ", type=" + type +
                 '}';
