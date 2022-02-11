@@ -14,7 +14,7 @@ statement   : expr SEMI                                         # Stat_Expr
             | ID '=' expr SEMI                                  # Stat_Assign
             | IF LP expr RP block                               # Stat_If
             | IF LP expr RP block ELSE block                    # Stat_If_Else
-            | RETURN expr                                       # Stat_Return
+            | RETURN expr SEMI                                  # Stat_Return
             | SEMI                                              # Stat_Blank
             ;
 

@@ -136,7 +136,7 @@ public interface OwlVisitor<T> extends ParseTreeVisitor<T> {
 
     /**
      * Visit a parse tree produced by the {@code VarRef}
-     * labeled alternative in {@link OwlParser#expr()()}.
+     * labeled alternative in {@link OwlParser#expr()}.
      *
      * @param ctx the parse tree
      * @return the visitor result
@@ -145,7 +145,7 @@ public interface OwlVisitor<T> extends ParseTreeVisitor<T> {
 
     /**
      * Visit a parse tree produced by the {@code Fn_Max}
-     * labeled alternative in {@link OwlParser#expr()()}.
+     * labeled alternative in {@link OwlParser#expr()}.
      *
      * @param ctx the parse tree
      * @return the visitor result
@@ -154,7 +154,7 @@ public interface OwlVisitor<T> extends ParseTreeVisitor<T> {
 
     /**
      * Visit a parse tree produced by the {@code Fn_Nvl}
-     * labeled alternative in {@link OwlParser#expr()()}.
+     * labeled alternative in {@link OwlParser#expr()}.
      *
      * @param ctx the parse tree
      * @return the visitor result
@@ -163,7 +163,7 @@ public interface OwlVisitor<T> extends ParseTreeVisitor<T> {
 
     /**
      * Visit a parse tree produced by the {@code Fn_Append}
-     * labeled alternative in {@link OwlParser#expr()()}.
+     * labeled alternative in {@link OwlParser#expr()}.
      *
      * @param ctx the parse tree
      * @return the visitor result
