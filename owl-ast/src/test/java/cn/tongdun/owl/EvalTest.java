@@ -35,7 +35,7 @@ public class EvalTest {
         OwlEvalVisitor visitor = new OwlEvalVisitor(owlContext);
         OwlVariableListener listener = new OwlVariableListener();
         listener.setOwlContext(owlContext);
-        OwlParser parser = OwlTestUtil.getParserFromString(OwlTestResource.ARITHMETIC_2);
+        OwlParser parser = OwlTestUtil.getParserFromString(OwlTestResource.ARITHMETIC_4_COMPARE);
         ParseTree parseTree = parser.prog();
         ParseTreeWalker walker = new ParseTreeWalker();
         walker.walk(listener, parseTree);

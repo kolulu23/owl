@@ -98,6 +98,16 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
         }
     }
 
+    private boolean requiresSameType(ParserRuleContext context, OwlVariable var1, OwlVariable var2) {
+        boolean var1isKnown = var1 != null && !OwlType.UNKNOWN.equals(var1.getType());
+        boolean var2isKnown = var2 != null && !OwlType.UNKNOWN.equals(var2.getType());
+        if (var1isKnown && var2isKnown) {
+            return var1.getType().equals(var2.getType());
+        } else {
+            return false;
+        }
+    }
+
     //********************** Program Execution and Evaluation **************
 
     @Override
@@ -180,7 +190,7 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
     @Override
     public OwlVariable visitLit_String(OwlParser.Lit_StringContext ctx) {
         String str = ctx.STRING().getText();
-        return new OwlStringVariable(str);
+        return new OwlStringVariable(str.substring(1, str.length() - 1));
     }
 
     @Override
@@ -364,14 +374,71 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
         }
     }
 
+    /**
+     * Comparing numbers, bools, strings and lists.
+     * Strings and lists only implement {@code EQ} and {@code NEQ}. <br/>
+     * For example, {@code "x" == "x"} evaluates to true, {@code [1, 2] == [1]} evaluates to false.
+     *
+     * @param ctx compare num context
+     * @return bool variable {@link OwlBoolVariable}
+     */
     @Override
     public OwlVariable visitCompareNum(OwlParser.CompareNumContext ctx) {
-        return super.visitCompareNum(ctx);
+        int type = ctx.op.getType();
+        OwlVariable leftVar = visit(ctx.expr(0));
+        OwlVariable rightVar = visit(ctx.expr(1));
+        OwlBoolVariable result = new OwlBoolVariable(false);
+        if (OwlParser.EQ == type) {
+            boolean sameType = requiresSameType(ctx, leftVar, rightVar);
+            if (sameType) {
+                result.setValue(leftVar.getInner().equals(rightVar.getInner()));
+            }
+        } else if (OwlParser.NEQ == type) {
+            boolean sameType = requiresSameType(ctx, leftVar, rightVar);
+            if (sameType) {
+                result.setValue(!leftVar.getInner().equals(rightVar.getInner()));
+            } else {
+                result.setValue(true);
+            }
+        } else {
+            boolean isNumberVar = requiresNumberType(ctx, leftVar) && requiresNumberType(ctx, rightVar);
+            if (isNumberVar) {
+                BigDecimal leftValue = new BigDecimal(leftVar.getInner().getValue().toString());
+                BigDecimal rightValue = new BigDecimal(rightVar.getInner().getValue().toString());
+                int compareResult = leftValue.compareTo(rightValue);
+                if (OwlParser.LT == type) {
+                    result.setValue(compareResult < 0);
+                } else if (OwlParser.LTEQ == type) {
+                    result.setValue(compareResult <= 0);
+                } else if (OwlParser.GT == type) {
+                    result.setValue(compareResult > 0);
+                } else if (OwlParser.GTEQ == type) {
+                    result.setValue(compareResult >= 0);
+                }
+            }
+        }
+        return result;
     }
 
     @Override
     public OwlVariable visitBoolExpr(OwlParser.BoolExprContext ctx) {
-        return super.visitBoolExpr(ctx);
+        int type = ctx.op.getType();
+        OwlVariable leftVar = visit(ctx.expr(0));
+        OwlVariable rightVar = visit(ctx.expr(1));
+        OwlBoolVariable result = new OwlBoolVariable(false);
+        // If one of them is not a bool, just returns false. I don't think we should add an extra semantic error for it.
+        if (OwlType.BOOLEAN.equals(leftVar.getType()) && OwlType.BOOLEAN.equals(rightVar.getType())) {
+            Boolean leftValue = leftVar.getInner().getBoolValue();
+            Boolean rightValue = rightVar.getInner().getBoolValue();
+            if (leftValue != null && rightValue != null) {
+                if (OwlParser.AND == type) {
+                    result.setValue(leftValue && rightValue);
+                } else if (OwlParser.OR == type) {
+                    result.setValue(leftValue || rightValue);
+                }
+            }
+        }
+        return result;
     }
 
     @Override

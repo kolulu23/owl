@@ -110,4 +110,27 @@ public class OwlUnknownVariable<T> extends OwlVariable implements Serializable {
                 ", type=" + type +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof OwlUnknownVariable)) {
+            return false;
+        }
+        OwlUnknownVariable<?> that = (OwlUnknownVariable<?>) o;
+        if (this.value == null && that.value == null) {
+            return true;
+        } else if (this.value != null && that.value != null) {
+            return value.equals(that.value);
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return value == null ? -1 : value.hashCode();
+    }
 }

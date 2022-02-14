@@ -1,5 +1,7 @@
 package cn.tongdun.owl.type;
 
+import org.apache.commons.collections4.CollectionUtils;
+
 import java.util.List;
 
 /**
@@ -29,5 +31,23 @@ public class OwlListVariable extends OwlUnknownVariable<List<? extends OwlVariab
                 ", id='" + id + '\'' +
                 ", type=" + type +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof OwlListVariable)) {
+            return false;
+        }
+        OwlListVariable that = (OwlListVariable) o;
+        if (this.value == null && that.value == null) {
+            return true;
+        } else if (this.value != null && that.value != null) {
+            return CollectionUtils.isEqualCollection(this.value, that.value);
+        } else {
+            return false;
+        }
     }
 }

@@ -26,4 +26,10 @@ public class OwlTestResource {
             "double d = a / a + 1;" +
             "list arr = [a,b,c,d];" +
             "return arr";
+    public static final String ARITHMETIC_3_DIV_ZERO = "return 3.01 / 0;";
+    public static final String ARITHMETIC_4_COMPARE = "string m=\"mysql\";" +
+            "list a = [m]; " +
+            "list b = [\"oracle\"];" +
+            "return a != b;";
+    public static final String ARITHMETIC_5_LOGIC= "return true or false;";
 }
