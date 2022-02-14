@@ -8,6 +8,7 @@ import cn.tongdun.owl.type.*;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,22 +28,21 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
     private OwlContext owlContext;
 
     /**
-     * Scale for divide operation
+     * Scale for divide operation. <br/>
+     * Affects dividing and statistics calculating functions.
      */
     private int divideScale;
 
-    public OwlEvalVisitor() {
-        this.divideScale = 4;
-    }
+    /**
+     * Scale for rounding.<br/>
+     * Affects ceiling and flooring.
+     */
+    private int roundingScale;
 
     public OwlEvalVisitor(OwlContext owlContext) {
         this.owlContext = owlContext;
         this.divideScale = 4;
-    }
-
-    public OwlEvalVisitor(OwlContext owlContext, int divideScale) {
-        this.owlContext = owlContext;
-        this.divideScale = divideScale;
+        this.roundingScale = 1;
     }
 
     //************************ Helper Methods ******************************
@@ -478,7 +478,22 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
 
     @Override
     public OwlVariable visitFn_Round(OwlParser.Fn_RoundContext ctx) {
-        return super.visitFn_Round(ctx);
+        OwlVariable variable = visit(ctx.expr());
+        boolean isNumberVar = requiresNumberType(ctx, variable);
+        if (isNumberVar) {
+            if (OwlType.INT.equals(variable.getType())) {
+                return variable;
+            } else {
+                int roundingScale = ctx.INT() == null ? this.roundingScale : Integer.parseInt(ctx.INT().getText());
+                BigDecimal value = variable.getInner().getDoubleValue();
+                if (value != null) {
+                    OwlDoubleVariable roundingNumber = new OwlDoubleVariable();
+                    roundingNumber.setValue(value.round(new MathContext(roundingScale, RoundingMode.HALF_UP)));
+                    return roundingNumber;
+                }
+            }
+        }
+        return null;
     }
 
     @Override
@@ -521,7 +536,21 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
 
     @Override
     public OwlVariable visitFn_Ceil(OwlParser.Fn_CeilContext ctx) {
-        return super.visitFn_Ceil(ctx);
+        OwlVariable variable = visit(ctx.expr());
+        boolean isNumberVar = requiresNumberType(ctx, variable);
+        if (isNumberVar) {
+            if (OwlType.INT.equals(variable.getType())) {
+                return variable;
+            } else {
+                BigDecimal value = variable.getInner().getDoubleValue();
+                if (value != null) {
+                    OwlDoubleVariable ceilingNumber = new OwlDoubleVariable();
+                    ceilingNumber.setValue(value.round(new MathContext(this.roundingScale, RoundingMode.CEILING)));
+                    return ceilingNumber;
+                }
+            }
+        }
+        return null;
     }
 
     @Override
@@ -630,7 +659,21 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
 
     @Override
     public OwlVariable visitFn_Floor(OwlParser.Fn_FloorContext ctx) {
-        return super.visitFn_Floor(ctx);
+        OwlVariable variable = visit(ctx.expr());
+        boolean isNumberVar = requiresNumberType(ctx, variable);
+        if (isNumberVar) {
+            if (OwlType.INT.equals(variable.getType())) {
+                return variable;
+            } else {
+                BigDecimal value = variable.getInner().getDoubleValue();
+                if (value != null) {
+                    OwlDoubleVariable floorNumber = new OwlDoubleVariable();
+                    floorNumber.setValue(value.round(new MathContext(this.roundingScale, RoundingMode.FLOOR)));
+                    return floorNumber;
+                }
+            }
+        }
+        return null;
     }
 
     @Override
@@ -652,5 +695,13 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
 
     public void setDivideScale(int divideScale) {
         this.divideScale = divideScale;
+    }
+
+    public int getRoundingScale() {
+        return roundingScale;
+    }
+
+    public void setRoundingScale(int roundingScale) {
+        this.roundingScale = roundingScale;
     }
 }

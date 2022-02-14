@@ -31,9 +31,37 @@ FN_ABS                      : K_FN_PREFIX 'abs' ;
 FN_AVG                      : K_FN_PREFIX 'avg' ;
 FN_MUL                      : K_FN_PREFIX 'mul' ;       // Not used
 FN_DIV                      : K_FN_PREFIX 'div' ;       // Not used
+
+/**
+ * Ceiling a number, defualt precision is 1
+ * @arg : int | double
+ * @returns : int
+ */
 FN_CEIL                     : K_FN_PREFIX 'ceil' ;
+
+/**
+ * Floor a number, defualt precision is 1
+ * @arg : int | double
+ * @returns : int
+ */
 FN_FLOOR                    : K_FN_PREFIX 'floor' ;
+
+/**
+ * Get the maximum of given arg list.
+ * This function takes one or more arguments.
+ * @arg : int | double
+ * @argN : int | double
+ * @returns : int | double
+ */
 FN_MAX                      : K_FN_PREFIX 'max' ;
+
+/**
+ * Get the minimum of given arg list
+ * This function takes one or more arguments.
+ * @arg : int | double
+ * @argN : int | double
+ * @returns : int | double
+ */
 FN_MIN                      : K_FN_PREFIX 'min' ;
 
 /**
@@ -41,6 +69,15 @@ FN_MIN                      : K_FN_PREFIX 'min' ;
  * @returns : double
  */
 FN_RAND                     : K_FN_PREFIX 'random' ;
+
+/**
+ * Rounding a number with half-up method, defualt precision is 1.
+ * When arg2 is provided, this function will use it as rounding precision.
+ * For example, #round(6.6667, 2) evaluates to 6.7 and #round(6.6667, 0) evaluates to 6.6667
+ * @arg1 : int | double
+ * @arg2 : int
+ * @returns : double
+ */
 FN_ROUND                    : K_FN_PREFIX 'round' ;
 FN_SUM                      : K_FN_PREFIX 'sum' ;
 FN_STD                      : K_FN_PREFIX 'std' ;
