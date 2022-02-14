@@ -48,7 +48,7 @@ FN_FLOOR                    : K_FN_PREFIX 'floor' ;
 
 /**
  * Get the maximum of given arg list.
- * This function takes one or more arguments.
+ * This function takes one or more arguments. Non-number args are ignored.
  * @arg : int | double
  * @argN : int | double
  * @returns : int | double
@@ -57,7 +57,7 @@ FN_MAX                      : K_FN_PREFIX 'max' ;
 
 /**
  * Get the minimum of given arg list
- * This function takes one or more arguments.
+ * This function takes one or more arguments. Non-number args are ignored.
  * @arg : int | double
  * @argN : int | double
  * @returns : int | double

@@ -458,7 +458,21 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
 
     @Override
     public OwlVariable visitFn_Max(OwlParser.Fn_MaxContext ctx) {
-        return super.visitFn_Max(ctx);
+        OwlDoubleVariable maximum = new OwlDoubleVariable(new BigDecimal(Double.MIN_VALUE));
+        for (OwlParser.ExprContext exprContext : ctx.expr()) {
+            OwlVariable variable = visit(exprContext);
+            if (variable != null) {
+                BigDecimal comparedValue;
+                if (OwlType.INT.equals(variable.getType())) {
+                    comparedValue = new BigDecimal(variable.getInner().getIntValue());
+                    maximum.setValue(maximum.getDoubleValue().max(comparedValue));
+                } else if (OwlType.DOUBLE.equals(variable.getType())) {
+                    comparedValue = variable.getInner().getDoubleValue();
+                    maximum.setValue(maximum.getDoubleValue().max(comparedValue));
+                }
+            }
+        }
+        return maximum;
     }
 
     @Override
@@ -649,7 +663,21 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
 
     @Override
     public OwlVariable visitFn_Min(OwlParser.Fn_MinContext ctx) {
-        return super.visitFn_Min(ctx);
+        OwlDoubleVariable minimum = new OwlDoubleVariable(new BigDecimal(Double.MAX_VALUE));
+        for (OwlParser.ExprContext exprContext : ctx.expr()) {
+            OwlVariable variable = visit(exprContext);
+            if (variable != null) {
+                BigDecimal comparedValue;
+                if (OwlType.INT.equals(variable.getType())) {
+                    comparedValue = new BigDecimal(variable.getInner().getIntValue());
+                    minimum.setValue(minimum.getDoubleValue().min(comparedValue));
+                } else if (OwlType.DOUBLE.equals(variable.getType())) {
+                    comparedValue = variable.getInner().getDoubleValue();
+                    minimum.setValue(minimum.getDoubleValue().min(comparedValue));
+                }
+            }
+        }
+        return minimum;
     }
 
     @Override

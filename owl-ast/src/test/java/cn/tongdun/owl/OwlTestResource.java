@@ -30,5 +30,5 @@ public class OwlTestResource {
             "return a != b;";
     public static final String ARITHMETIC_5_LOGIC= "return true or false;";
     public static final String FUN_1 = ARITHMETIC +
-            "return #round(#avg(arr), 3);";
+            "return #min(true, a,\"b\",c, d, 0);";
 }
