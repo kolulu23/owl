@@ -360,15 +360,17 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
             return result;
         } else {
             OwlDoubleVariable result = new OwlDoubleVariable();
-            BigDecimal leftValue = leftVar.getInner().getDoubleValue();
-            BigDecimal rightValue = rightVar.getInner().getDoubleValue();
+            Object leftValue = leftVar.getInner().getValue();
+            Object rightValue = rightVar.getInner().getValue();
             if (leftValue == null || rightValue == null) {
                 return null;
             }
+            BigDecimal leftDecimal = new BigDecimal(leftValue.toString());
+            BigDecimal rightDecimal = new BigDecimal(rightValue.toString());
             if (ctx.op.getType() == OwlParser.ADD) {
-                result.setValue(leftValue.add(rightValue));
+                result.setValue(leftDecimal.add(rightDecimal));
             } else {
-                result.setValue(leftValue.subtract(rightValue));
+                result.setValue(leftDecimal.subtract(rightDecimal));
             }
             return result;
         }
