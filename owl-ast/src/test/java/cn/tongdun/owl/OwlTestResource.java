@@ -17,19 +17,18 @@ public class OwlTestResource {
 
     public static final String PATH_TO_IFELSE = "/Users/liutianlu/Projects/JavaProjects/owl/owl-ast/src/test/java/cn/tongdun/owl/example/ifelse.txt";
 
-    public static final String ARITHMETIC = "string str = \"hello world of warcraft\";" +
-            "int maxIndex = #len(str) - 1;" +
-            "return maxIndex";
-    public static final String ARITHMETIC_2 = "int a = 1 + 1;" +
-            "double b = 2 * 6.7;" +
-            "double c = b - a;" +
-            "double d = a / a + 1;" +
-            "list arr = [a,b,c,d];" +
-            "return arr";
+    public static final String ARITHMETIC = "string str = \"hello world of warcraft\";\n" +
+            "int a = 1 + 1;\n" +
+            "double b = 2 * 6.7;\n" +
+            "double c = b - a;\n" +
+            "double d = a / (a + 1);\n" +
+            "list arr = [a,b,c,d];\n";
     public static final String ARITHMETIC_3_DIV_ZERO = "return 3.01 / 0;";
     public static final String ARITHMETIC_4_COMPARE = "string m=\"mysql\";" +
             "list a = [m]; " +
             "list b = [\"oracle\"];" +
             "return a != b;";
     public static final String ARITHMETIC_5_LOGIC= "return true or false;";
+    public static final String FUN_1 = ARITHMETIC +
+            "return #avg(arr);";
 }

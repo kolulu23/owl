@@ -15,7 +15,19 @@ AND                         : 'and' ;
 OR                          : 'or' ;
 
 /********** Basic Math Functions(Returns number) **********/
+
+/**
+ * Returns the absolute value of given number
+ * @arg : int | double
+ * @returns : int | double
+ */
 FN_ABS                      : K_FN_PREFIX 'abs' ;
+
+/**
+ * Returns the average value of given series of number
+ * @arg : list
+ * @returns : double
+ */
 FN_AVG                      : K_FN_PREFIX 'avg' ;
 FN_MUL                      : K_FN_PREFIX 'mul' ;       // Not used
 FN_DIV                      : K_FN_PREFIX 'div' ;       // Not used
@@ -23,6 +35,11 @@ FN_CEIL                     : K_FN_PREFIX 'ceil' ;
 FN_FLOOR                    : K_FN_PREFIX 'floor' ;
 FN_MAX                      : K_FN_PREFIX 'max' ;
 FN_MIN                      : K_FN_PREFIX 'min' ;
+
+/**
+ * Returns a pseudorandom double value between zero (inclusive) and one (exclusive).
+ * @returns : double
+ */
 FN_RAND                     : K_FN_PREFIX 'random' ;
 FN_ROUND                    : K_FN_PREFIX 'round' ;
 FN_SUM                      : K_FN_PREFIX 'sum' ;

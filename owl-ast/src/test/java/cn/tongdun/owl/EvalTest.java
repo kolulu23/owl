@@ -33,9 +33,10 @@ public class EvalTest {
     @Test
     public void testBasicArithmeticExpr() {
         OwlEvalVisitor visitor = new OwlEvalVisitor(owlContext);
+        visitor.setDivideScale(6);
         OwlVariableListener listener = new OwlVariableListener();
         listener.setOwlContext(owlContext);
-        OwlParser parser = OwlTestUtil.getParserFromString(OwlTestResource.ARITHMETIC_4_COMPARE);
+        OwlParser parser = OwlTestUtil.getParserFromString(OwlTestResource.FUN_1);
         ParseTree parseTree = parser.prog();
         ParseTreeWalker walker = new ParseTreeWalker();
         walker.walk(listener, parseTree);

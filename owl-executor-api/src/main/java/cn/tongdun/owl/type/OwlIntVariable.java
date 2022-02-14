@@ -1,6 +1,7 @@
 package cn.tongdun.owl.type;
 
 /**
+ * TODO Use Long instead
  * @author liutianlu
  * <br/>Created 2022/2/10 5:50 PM
  */

@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static cn.tongdun.owl.parse.OwlSemanticErrorEnum.GLOBAL_VAR_NOT_INIT;
 import static cn.tongdun.owl.parse.OwlSemanticErrorEnum.VARIABLE_NOT_DEFINED;
@@ -454,6 +455,188 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
     }
 
     //************************ Functions *************************
+
+    @Override
+    public OwlVariable visitFn_Max(OwlParser.Fn_MaxContext ctx) {
+        return super.visitFn_Max(ctx);
+    }
+
+    @Override
+    public OwlVariable visitFn_Nvl(OwlParser.Fn_NvlContext ctx) {
+        return super.visitFn_Nvl(ctx);
+    }
+
+    @Override
+    public OwlVariable visitFn_Append(OwlParser.Fn_AppendContext ctx) {
+        return super.visitFn_Append(ctx);
+    }
+
+    @Override
+    public OwlVariable visitFn_Std(OwlParser.Fn_StdContext ctx) {
+        return super.visitFn_Std(ctx);
+    }
+
+    @Override
+    public OwlVariable visitFn_Round(OwlParser.Fn_RoundContext ctx) {
+        return super.visitFn_Round(ctx);
+    }
+
+    @Override
+    public OwlVariable visitFn_ToNumber(OwlParser.Fn_ToNumberContext ctx) {
+        return super.visitFn_ToNumber(ctx);
+    }
+
+    @Override
+    public OwlVariable visitFn_Eq(OwlParser.Fn_EqContext ctx) {
+        return super.visitFn_Eq(ctx);
+    }
+
+    @Override
+    public OwlVariable visitFn_Variance(OwlParser.Fn_VarianceContext ctx) {
+        return super.visitFn_Variance(ctx);
+    }
+
+    @Override
+    public OwlVariable visitFn_Abs(OwlParser.Fn_AbsContext ctx) {
+        OwlVariable variable = visit(ctx.expr());
+        if (!requiresNumberType(ctx, variable) || variable.getInner().getValue() == null) {
+            return null;
+        }
+        // Does not consume the original value but create a new instance of variable
+        if (OwlType.DOUBLE.equals(variable.getType())) {
+            OwlDoubleVariable abs = new OwlDoubleVariable();
+            abs.setValue(variable.getInner().getDoubleValue().abs());
+            return abs;
+        } else {
+            OwlIntVariable abs = new OwlIntVariable();
+            abs.setValue(Math.abs(variable.getInner().getIntValue()));
+            return abs;
+        }
+    }
+
+    @Override
+    public OwlVariable visitFn_IsNull(OwlParser.Fn_IsNullContext ctx) {
+        return super.visitFn_IsNull(ctx);
+    }
+
+    @Override
+    public OwlVariable visitFn_Ceil(OwlParser.Fn_CeilContext ctx) {
+        return super.visitFn_Ceil(ctx);
+    }
+
+    @Override
+    public OwlVariable visitFn_Substr(OwlParser.Fn_SubstrContext ctx) {
+        return super.visitFn_Substr(ctx);
+    }
+
+    @Override
+    public OwlVariable visitFn_IsNotNull(OwlParser.Fn_IsNotNullContext ctx) {
+        return super.visitFn_IsNotNull(ctx);
+    }
+
+    @Override
+    public OwlVariable visitFn_Union(OwlParser.Fn_UnionContext ctx) {
+        return super.visitFn_Union(ctx);
+    }
+
+    @Override
+    public OwlVariable visitFn_Concat(OwlParser.Fn_ConcatContext ctx) {
+        return super.visitFn_Concat(ctx);
+    }
+
+    @Override
+    public OwlVariable visitFn_NEq(OwlParser.Fn_NEqContext ctx) {
+        return super.visitFn_NEq(ctx);
+    }
+
+    @Override
+    public OwlVariable visitFn_Dedup(OwlParser.Fn_DedupContext ctx) {
+        return super.visitFn_Dedup(ctx);
+    }
+
+    @Override
+    public OwlVariable visitFn_ToString(OwlParser.Fn_ToStringContext ctx) {
+        return super.visitFn_ToString(ctx);
+    }
+
+    @Override
+    public OwlVariable visitFn_Trim(OwlParser.Fn_TrimContext ctx) {
+        return super.visitFn_Trim(ctx);
+    }
+
+    @Override
+    public OwlVariable visitFn_Contains(OwlParser.Fn_ContainsContext ctx) {
+        return super.visitFn_Contains(ctx);
+    }
+
+    @Override
+    public OwlVariable visitFn_Len(OwlParser.Fn_LenContext ctx) {
+        return super.visitFn_Len(ctx);
+    }
+
+    @Override
+    public OwlVariable visitFn_Intersection(OwlParser.Fn_IntersectionContext ctx) {
+        return super.visitFn_Intersection(ctx);
+    }
+
+    @Override
+    public OwlVariable visitFn_NotContains(OwlParser.Fn_NotContainsContext ctx) {
+        return super.visitFn_NotContains(ctx);
+    }
+
+    @Override
+    public OwlVariable visitFn_Rand(OwlParser.Fn_RandContext ctx) {
+        OwlDoubleVariable variable = new OwlDoubleVariable();
+        variable.setValue(BigDecimal.valueOf(ThreadLocalRandom.current().nextDouble()));
+        return variable;
+    }
+
+    @Override
+    public OwlVariable visitFn_Avg(OwlParser.Fn_AvgContext ctx) {
+        OwlVariable variable = visit(ctx.expr());
+        boolean isListType = requiresType(ctx, ctx.expr().getText(), variable, OwlType.LIST);
+        OwlDoubleVariable result = new OwlDoubleVariable();
+        if (isListType) {
+            List<? extends OwlVariable> list = variable.getInner().getListValue();
+            if (list == null) {
+                return null;
+            }
+            BigDecimal sum = BigDecimal.ZERO;
+            BigDecimal size = new BigDecimal(list.size());
+            for (OwlVariable owlVariable : list) {
+                if (owlVariable != null && owlVariable.getInner().getValue() != null) {
+                    if (OwlType.INT.equals(owlVariable.getType())) {
+                        sum = sum.add(new BigDecimal(owlVariable.getInner().getIntValue()));
+                    } else if (OwlType.DOUBLE.equals(owlVariable.getType())) {
+                        sum = sum.add(owlVariable.getInner().getDoubleValue());
+                    }
+                }
+            }
+            result.setValue(sum.divide(size, this.divideScale, RoundingMode.HALF_UP));
+            return result;
+        }
+        return null;
+    }
+
+    @Override
+    public OwlVariable visitFn_Min(OwlParser.Fn_MinContext ctx) {
+        return super.visitFn_Min(ctx);
+    }
+
+    @Override
+    public OwlVariable visitFn_Sum(OwlParser.Fn_SumContext ctx) {
+        return super.visitFn_Sum(ctx);
+    }
+
+    @Override
+    public OwlVariable visitFn_Floor(OwlParser.Fn_FloorContext ctx) {
+        return super.visitFn_Floor(ctx);
+    }
+
+    @Override
+    public OwlVariable visitFn_Sort(OwlParser.Fn_SortContext ctx) {
+        return super.visitFn_Sort(ctx);
+    }
 
     public OwlContext getOwlContext() {
         return owlContext;
