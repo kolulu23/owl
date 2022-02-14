@@ -12,7 +12,7 @@ import java.util.List;
  * @author liutianlu
  * <br/>Created 2022/2/10 5:56 PM
  */
-public class OwlListVariable extends OwlUnknownVariable<List<? extends OwlVariable>> {
+public class OwlListVariable extends OwlUnknownVariable<List<OwlVariable>> {
     private static final long serialVersionUID = 938435808718940169L;
 
     public OwlListVariable() {

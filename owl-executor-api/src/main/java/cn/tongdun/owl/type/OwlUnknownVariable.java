@@ -96,9 +96,9 @@ public class OwlUnknownVariable<T> extends OwlVariable implements Serializable {
     }
 
     @SuppressWarnings("unchecked")
-    public List<? extends OwlVariable> getListValue() {
+    public List<OwlVariable> getListValue() {
         if (OwlType.LIST.equals(this.getType())) {
-            return value == null ? null : (List<? extends OwlVariable>) value;
+            return value == null ? null : (List<OwlVariable>) value;
         }
         return null;
     }

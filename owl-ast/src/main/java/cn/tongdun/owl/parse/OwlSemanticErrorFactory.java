@@ -1,8 +1,6 @@
 package cn.tongdun.owl.parse;
 
 import cn.tongdun.owl.error.OwlSemanticError;
-import cn.tongdun.owl.type.OwlType;
-import cn.tongdun.owl.type.OwlVariable;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
@@ -20,6 +18,21 @@ public class OwlSemanticErrorFactory {
         OwlSemanticError semanticError = new OwlSemanticError();
         semanticError.setCodeSegment(context.getText());
         semanticError.setLine(context.getStart().getLine());
+        return semanticError;
+    }
+
+    /**
+     * This function can not process given args. <br/>
+     * In Owl, some functions accept various arguments, those args may or may not have the same type.
+     * As a result, args sent by caller that can not suffice the function's declaration will leads to undefined behaviour
+     *
+     * @param context  parsing context.
+     * @param funcName function name
+     * @return sem error
+     */
+    public static OwlSemanticError noOperableArgForFunc(ParserRuleContext context, String funcName) {
+        OwlSemanticError semanticError = semanticErrorOf(context);
+        semanticError.setMessage(String.format(OwlSemanticErrorEnum.NON_OPERABLE_ARG_FOR_FUNCTION.getErrorMsg(), funcName));
         return semanticError;
     }
 }

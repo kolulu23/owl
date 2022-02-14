@@ -51,7 +51,7 @@ FN_FLOOR                    : K_FN_PREFIX 'floor' ;
  * This function takes one or more arguments. Non-number args are ignored.
  * @arg : int | double
  * @argN : int | double
- * @returns : int | double
+ * @returns : double
  */
 FN_MAX                      : K_FN_PREFIX 'max' ;
 
@@ -60,7 +60,7 @@ FN_MAX                      : K_FN_PREFIX 'max' ;
  * This function takes one or more arguments. Non-number args are ignored.
  * @arg : int | double
  * @argN : int | double
- * @returns : int | double
+ * @returns : double
  */
 FN_MIN                      : K_FN_PREFIX 'min' ;
 
@@ -79,8 +79,32 @@ FN_RAND                     : K_FN_PREFIX 'random' ;
  * @returns : double
  */
 FN_ROUND                    : K_FN_PREFIX 'round' ;
+
+/**
+ * Get the sum number of given arg list
+ * This function takes one or more arguments. Non-number args are ignored.
+ * @arg : int | double
+ * @argN : int | double
+ * @returns : double
+ */
 FN_SUM                      : K_FN_PREFIX 'sum' ;
+
+/**
+ * Calculate standard deviation for expressions
+ * This function takes one or more arguments. Non-number args are ignored.
+ * @arg : int | double
+ * @argN : int | double
+ * @returns : double
+ */
 FN_STD                      : K_FN_PREFIX 'std' ;
+
+/**
+ * Calculate variation for expressions
+ * This function takes one or more arguments. Non-number args are ignored.
+ * @arg : int | double
+ * @argN : int | double
+ * @returns : double
+ */
 FN_VARIANCE                 : K_FN_PREFIX 'variance' ;
 
 /**
@@ -189,6 +213,7 @@ FN_EQ                       : K_FN_PREFIX 'eq' ;
  * Takes two expressions as its arguments.
  * Evaluates both expressions, return the first expression reuslt if it does not return null or empty string.
  * Otherwise return the second. If both expression evals to non-null, then the first one will be returned.
+ * If both expression evals to null, then null will be returned.
  */
 FN_NVL                      : K_FN_PREFIX 'nvl';
 
