@@ -534,12 +534,33 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
 
     @Override
     public OwlVariable visitFn_Eq(OwlParser.Fn_EqContext ctx) {
-        return super.visitFn_Eq(ctx);
+        OwlVariable left = visit(ctx.expr(0));
+        OwlVariable right = visit(ctx.expr(1));
+        OwlBoolVariable result = new OwlBoolVariable(false);
+        boolean leftNonNull = requiresNonNullVariable(left);
+        boolean rightNonNull = requiresNonNullVariable(right);
+        // null equals to null
+        if (!leftNonNull && !rightNonNull) {
+            result.setValue(true);
+        } else if (leftNonNull && rightNonNull) {
+            result.setValue(left.getInner().equals(right.getInner()));
+        }
+        return result;
     }
 
     @Override
     public OwlVariable visitFn_NEq(OwlParser.Fn_NEqContext ctx) {
-        return super.visitFn_NEq(ctx);
+        OwlVariable left = visit(ctx.expr(0));
+        OwlVariable right = visit(ctx.expr(1));
+        OwlBoolVariable result = new OwlBoolVariable(false);
+        boolean leftNonNull = requiresNonNullVariable(left);
+        boolean rightNonNull = requiresNonNullVariable(right);
+        if (leftNonNull && rightNonNull) {
+            result.setValue(!left.getInner().equals(right.getInner()));
+        } else if (leftNonNull || rightNonNull) {
+            result.setValue(true);
+        }
+        return result;
     }
 
     @Override
@@ -618,17 +639,62 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
 
     @Override
     public OwlVariable visitFn_Substr(OwlParser.Fn_SubstrContext ctx) {
-        return super.visitFn_Substr(ctx);
+        OwlVariable variable = visit(ctx.expr());
+        boolean isString = requiresType(ctx, ctx.expr().getText(), variable, OwlType.STRING);
+        if (!isString || variable.getInner().getValue() == null) {
+            return null;
+        }
+        String src = variable.getInner().getStringValue();
+        // TODO Support optional args in Owl's grammar
+        int start = ctx.start == null ? 0 : Integer.parseInt(ctx.start.getText());
+        int end = ctx.end == null ? src.length() : Integer.parseInt(ctx.end.getText());
+        if (start < 0) {
+            start = 0;
+        }
+        if (end > src.length()) {
+            end = src.length();
+        }
+        if (start > end) {
+            start = end;
+        }
+        OwlStringVariable result = new OwlStringVariable();
+        String truncated = src.substring(start, end);
+        result.setValue(truncated);
+        return result;
     }
 
     @Override
     public OwlVariable visitFn_Concat(OwlParser.Fn_ConcatContext ctx) {
-        return super.visitFn_Concat(ctx);
+        OwlVariable strA = visit(ctx.expr(0));
+        OwlVariable strB = visit(ctx.expr(1));
+        boolean isString = requiresType(ctx, ctx.expr(0).getText(), strA, OwlType.STRING)
+                && requiresType(ctx, ctx.expr(1).getText(), strB, OwlType.STRING);
+        if (!isString) {
+            return null;
+        }
+        String separator = "";
+        if (ctx.sep != null) {
+            OwlVariable sepVar = visit(ctx.sep);
+            if (requiresNonNullVariable(sepVar)) {
+                separator = sepVar.getInner().getStringValue();
+            }
+        }
+        OwlStringVariable result = new OwlStringVariable();
+        // null strings will be joined as "null"
+        result.setValue(String.join(separator, strA.getInner().getStringValue(), strB.getInner().getStringValue()));
+        return result;
     }
 
     @Override
     public OwlVariable visitFn_Trim(OwlParser.Fn_TrimContext ctx) {
-        return super.visitFn_Trim(ctx);
+        OwlVariable variable = visit(ctx.expr());
+        boolean isString = requiresType(ctx, ctx.expr().getText(), variable, OwlType.STRING);
+        if (!isString || variable.getInner().getValue() == null) {
+            return null;
+        }
+        OwlStringVariable result = new OwlStringVariable();
+        result.setValue(variable.getInner().getStringValue().trim());
+        return result;
     }
 
     @Override

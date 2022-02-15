@@ -30,6 +30,5 @@ public class OwlTestResource {
             "return a != b;";
     public static final String ARITHMETIC_5_LOGIC= "return true or false;";
     public static final String FUN_1 = ARITHMETIC +
-            "#append(arr, 4.231);" +
-            "return arr;";
+            "return #trim(#concat(\" My\", \"SQL  \", \" \"));";
 }
