@@ -6,14 +6,19 @@ import cn.tongdun.owl.generated.OwlBaseVisitor;
 import cn.tongdun.owl.generated.OwlParser;
 import cn.tongdun.owl.type.*;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.stat.descriptive.moment.Variance;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 import static cn.tongdun.owl.parse.OwlSemanticErrorEnum.GLOBAL_VAR_NOT_INIT;
 import static cn.tongdun.owl.parse.OwlSemanticErrorEnum.VARIABLE_NOT_DEFINED;
@@ -44,6 +49,8 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
      * For Variance and Standard deviation
      */
     private static final Variance VARIANCE = new Variance(false);
+
+    private static final String NULL_LITERAL = "null";
 
     public OwlEvalVisitor(OwlContext owlContext) {
         this.owlContext = owlContext;
@@ -113,7 +120,7 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
         return variable != null && variable.getInner().getValue() != null;
     }
 
-    private boolean requiresSameType(ParserRuleContext context, OwlVariable var1, OwlVariable var2) {
+    private boolean requiresSameType(OwlVariable var1, OwlVariable var2) {
         boolean var1isKnown = var1 != null && !OwlType.UNKNOWN.equals(var1.getType());
         boolean var2isKnown = var2 != null && !OwlType.UNKNOWN.equals(var2.getType());
         if (var1isKnown && var2isKnown) {
@@ -121,6 +128,35 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
         } else {
             return false;
         }
+    }
+
+    /**
+     * If src contains target, returns true.
+     * This function only returns true if: <br/>
+     * src and target are strings and src contains target.<br/>
+     * src is a list in which target's value can be found.
+     *
+     * @param src    source variable
+     * @param target target variable
+     * @return true if src contains target
+     */
+    private boolean variableContains(OwlVariable src, OwlVariable target) {
+        boolean srcNotNull = requiresNonNullVariable(src);
+        boolean targetNotNull = requiresNonNullVariable(target);
+        boolean srcIsString = OwlType.STRING.equals(src.getType());
+        boolean srcIsList = OwlType.LIST.equals(src.getType());
+        boolean targetIsString = OwlType.STRING.equals(target.getType());
+        if (srcNotNull) {
+            // A string can not contain null
+            if (srcIsString && targetNotNull && targetIsString) {
+                String srcString = src.getInner().getStringValue();
+                String targetString = target.getInner().getStringValue();
+                return srcString.contains(targetString);
+            } else if (srcIsList) {
+                return src.getInner().getListValue().contains(target);
+            }
+        }
+        return false;
     }
 
     //********************** Program Execution and Evaluation **************
@@ -134,6 +170,7 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
     public OwlVariable visitProg(OwlParser.ProgContext ctx) {
         List<OwlParser.StatementContext> statementContexts = ctx.statement();
         for (int i = 0; i < statementContexts.size() - 1; i++) {
+            // TODO check if else
             visit(statementContexts.get(i));
         }
         OwlParser.StatementContext lastStatement = statementContexts.get(statementContexts.size() - 1);
@@ -243,6 +280,15 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
         return null;
     }
 
+    /**
+     * Assigner takes assignee's id rather than assignee takes assigner's value
+     * so references to assignee are still untouched by assign. <br/>
+     * For example, after executing this unit {@code int a = 2; list x = [a]; a = 3; return x;}<br/>
+     * variable {@code a} will be {@code 3} and variable {@code x} will be {@code [2]}.
+     *
+     * @param ctx parsing assign context
+     * @return statements returns nothing but null
+     */
     @Override
     public OwlVariable visitStat_Assign(OwlParser.Stat_AssignContext ctx) {
         String id = ctx.ID().getText();
@@ -256,8 +302,9 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
             return null;
         }
         boolean typeCheckOk = requiresType(ctx, id, assignerVar, assigneeVar.getType());
+        assignerVar.setId(assigneeVar.getId());
         if (typeCheckOk) {
-            owlContext.addVariable(assigneeVar, false);
+            owlContext.addVariable(assignerVar, false);
         }
         return null;
     }
@@ -406,12 +453,12 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
         OwlVariable rightVar = visit(ctx.expr(1));
         OwlBoolVariable result = new OwlBoolVariable(false);
         if (OwlParser.EQ == type) {
-            boolean sameType = requiresSameType(ctx, leftVar, rightVar);
+            boolean sameType = requiresSameType(leftVar, rightVar);
             if (sameType) {
                 result.setValue(leftVar.getInner().equals(rightVar.getInner()));
             }
         } else if (OwlParser.NEQ == type) {
-            boolean sameType = requiresSameType(ctx, leftVar, rightVar);
+            boolean sameType = requiresSameType(leftVar, rightVar);
             if (sameType) {
                 result.setValue(!leftVar.getInner().equals(rightVar.getInner()));
             } else {
@@ -499,22 +546,63 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
 
     @Override
     public OwlVariable visitFn_Union(OwlParser.Fn_UnionContext ctx) {
-        return super.visitFn_Union(ctx);
+        OwlVariable left = visit(ctx.expr(0));
+        OwlVariable right = visit(ctx.expr(1));
+        boolean bothAreList = requiresType(ctx, ctx.expr(0).getText(), left, OwlType.LIST)
+                && requiresType(ctx, ctx.expr(1).getText(), right, OwlType.LIST);
+        if (!bothAreList) {
+            return null;
+        }
+        OwlListVariable unionVar = new OwlListVariable();
+        List<OwlVariable> union = new ArrayList<>(CollectionUtils.union(left.getInner().getListValue(),
+                right.getInner().getListValue()));
+        unionVar.setValue(union);
+        return unionVar;
     }
 
     @Override
     public OwlVariable visitFn_Intersection(OwlParser.Fn_IntersectionContext ctx) {
-        return super.visitFn_Intersection(ctx);
+        OwlVariable left = visit(ctx.expr(0));
+        OwlVariable right = visit(ctx.expr(1));
+        boolean bothAreList = requiresType(ctx, ctx.expr(0).getText(), left, OwlType.LIST)
+                && requiresType(ctx, ctx.expr(1).getText(), right, OwlType.LIST);
+        if (!bothAreList) {
+            return null;
+        }
+        OwlListVariable intersectVar = new OwlListVariable();
+        List<OwlVariable> intersection = new ArrayList<>(CollectionUtils.intersection(left.getInner().getListValue(),
+                right.getInner().getListValue()));
+        intersectVar.setValue(intersection);
+        return intersectVar;
     }
 
     @Override
     public OwlVariable visitFn_Dedup(OwlParser.Fn_DedupContext ctx) {
-        return super.visitFn_Dedup(ctx);
+        OwlVariable variable = visit(ctx.expr());
+        boolean isListVat = requiresType(ctx, ctx.expr().getText(), variable, OwlType.LIST);
+        if (!isListVat) {
+            return null;
+        }
+        OwlListVariable deduplicated = new OwlListVariable();
+        deduplicated.setValue(new ArrayList<>(new HashSet<>(variable.getInner().getListValue())));
+        return deduplicated;
     }
 
     @Override
     public OwlVariable visitFn_Sort(OwlParser.Fn_SortContext ctx) {
-        return super.visitFn_Sort(ctx);
+        OwlVariable variable = visit(ctx.expr(0));
+        OwlVariable ascending = ctx.asc == null ? new OwlBoolVariable(true) : visit(ctx.asc);
+        boolean isListVar = requiresType(ctx, ctx.expr(0).getText(), variable, OwlType.LIST);
+        if (!isListVar) {
+            return null;
+        }
+        Comparator<OwlVariable> comparator = Boolean.TRUE.equals(ascending.getInner().getBoolValue())
+                ? new OwlAscendingComparator()
+                : new OwlDescendingComparator();
+        List<OwlVariable> copied = new ArrayList<>(variable.getInner().getListValue());
+        OwlListVariable result = new OwlListVariable(copied);
+        result.getInner().getListValue().sort(comparator);
+        return result;
     }
 
     @Override
@@ -699,22 +787,60 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
 
     @Override
     public OwlVariable visitFn_Contains(OwlParser.Fn_ContainsContext ctx) {
-        return super.visitFn_Contains(ctx);
+        OwlVariable src = visit(ctx.expr(0));
+        OwlVariable target = visit(ctx.expr(1));
+        OwlBoolVariable result = new OwlBoolVariable(false);
+        result.setValue(variableContains(src, target));
+        return result;
     }
 
     @Override
     public OwlVariable visitFn_NotContains(OwlParser.Fn_NotContainsContext ctx) {
-        return super.visitFn_NotContains(ctx);
+        OwlVariable src = visit(ctx.expr(0));
+        OwlVariable target = visit(ctx.expr(1));
+        OwlBoolVariable result = new OwlBoolVariable(false);
+        result.setValue(!variableContains(src, target));
+        return result;
     }
 
     @Override
     public OwlVariable visitFn_ToString(OwlParser.Fn_ToStringContext ctx) {
-        return super.visitFn_ToString(ctx);
+        OwlVariable variable = visit(ctx.expr());
+        OwlStringVariable result = new OwlStringVariable();
+        if (variable == null || variable.getInner().getValue() == null) {
+            // Literal null
+            result.setValue(NULL_LITERAL);
+        } else if (OwlType.LIST.equals(variable.getType())) {
+            List<String> items = variable.getInner().getListValue().stream().map(var -> {
+                if (var == null || var.getInner().getValue() == null) {
+                    return NULL_LITERAL;
+                } else {
+                    return var.getInner().getValue().toString();
+                }
+            }).collect(Collectors.toList());
+            result.setValue("[" + StringUtils.join(items, ',') + "]");
+        } else {
+            result.setValue(variable.getInner().getValue().toString());
+        }
+        return result;
     }
 
     @Override
     public OwlVariable visitFn_Len(OwlParser.Fn_LenContext ctx) {
-        return super.visitFn_Len(ctx);
+        OwlVariable variable = visit(ctx.expr());
+        boolean validVar = requiresKnownType(ctx, variable) && variable.getInner().getValue() != null;
+        if (validVar) {
+            OwlIntVariable result = new OwlIntVariable();
+            if (OwlType.LIST.equals(variable.getType())) {
+                result.setValue(variable.getInner().getListValue().size());
+            } else if (OwlType.BOOLEAN.equals(variable.getType())) {
+                result.setValue(1);
+            } else {
+                result.setValue(variable.getInner().getValue().toString().length());
+            }
+            return result;
+        }
+        return null;
     }
 
     @Override
@@ -873,7 +999,19 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
 
     @Override
     public OwlVariable visitFn_Variance(OwlParser.Fn_VarianceContext ctx) {
-        return super.visitFn_Variance(ctx);
+        OwlDoubleVariable result = new OwlDoubleVariable();
+        List<OwlParser.ExprContext> exprList = ctx.expr();
+        double[] samples = new double[exprList.size()];
+        int sampleIndex = 0;
+        for (OwlParser.ExprContext exprContext : exprList) {
+            OwlVariable variable = visit(exprContext);
+            if (requiresNumberTypeAndNonNullValue(ctx, variable)) {
+                samples[sampleIndex] = new Double(variable.getInner().getValue().toString());
+                sampleIndex++;
+            }
+        }
+        result.setValue(BigDecimal.valueOf(VARIANCE.evaluate(samples)));
+        return result;
     }
 
     public OwlContext getOwlContext() {

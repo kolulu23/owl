@@ -22,7 +22,8 @@ public class OwlTestResource {
             "double b = 2 * 6.7;\n" +
             "double c = b - a;\n" +
             "double d = a / (a + 1);\n" +
-            "list arr = [a,b,c,d];\n";
+            "list arr = [a,b,c,d];\n" +
+            "a = 66666;\n";
     public static final String ARITHMETIC_3_DIV_ZERO = "return 3.01 / 0;";
     public static final String ARITHMETIC_4_COMPARE = "string m=\"mysql\";" +
             "list a = [m]; " +
@@ -30,5 +31,7 @@ public class OwlTestResource {
             "return a != b;";
     public static final String ARITHMETIC_5_LOGIC= "return true or false;";
     public static final String FUN_1 = ARITHMETIC +
-            "return #trim(#concat(\" My\", \"SQL  \", \" \"));";
+            "double copied = c;" +
+            "list d = [933,933,a,66666,copied,c];" +
+            "return #toString(#dedup(d));";
 }

@@ -24,6 +24,12 @@ public class OwlListVariable extends OwlUnknownVariable<List<OwlVariable>> {
         this.type = OwlType.LIST;
     }
 
+    public OwlListVariable(List<OwlVariable> values) {
+        super();
+        this.type = OwlType.LIST;
+        this.value = values;
+    }
+
     @Override
     public String toString() {
         return "OwlListVariable{" +
