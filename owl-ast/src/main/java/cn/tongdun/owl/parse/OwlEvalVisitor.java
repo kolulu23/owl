@@ -169,19 +169,58 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
     @Override
     public OwlVariable visitProg(OwlParser.ProgContext ctx) {
         List<OwlParser.StatementContext> statementContexts = ctx.statement();
-        for (int i = 0; i < statementContexts.size() - 1; i++) {
-            // TODO check if else
-            visit(statementContexts.get(i));
+        OwlVariable result = null;
+        for (OwlParser.StatementContext statementContext : statementContexts) {
+            // variable is not null only if there's a "return xxx;" statement before or right at the last statement.
+            result = visit(statementContext);
         }
-        OwlParser.StatementContext lastStatement = statementContexts.get(statementContexts.size() - 1);
-        // Evaluate last statement only if it is a 'return expr'
-        if (lastStatement instanceof OwlParser.Stat_ReturnContext) {
-            return visitStat_Return((OwlParser.Stat_ReturnContext) lastStatement);
-        } else {
-            OwlSemanticError semanticError = OwlSemanticErrorFactory.semanticErrorOf(lastStatement);
+        if (result == null) {
+            OwlSemanticError semanticError = OwlSemanticErrorFactory.semanticErrorOf(ctx);
             semanticError.setMessage(OwlSemanticErrorEnum.DSL_DOES_NOT_RETURN.getErrorMsg());
             owlContext.addSemanticError(semanticError);
             return null;
+        }
+        return result;
+    }
+
+    @Override
+    public OwlVariable visitBlock(OwlParser.BlockContext ctx) {
+        for (OwlParser.StatementContext statementContext : ctx.statement()) {
+            // Same as what we do in visitProg. For example, "if" block returns early.
+            OwlVariable variable = visit(statementContext);
+            if (variable != null) {
+                return variable;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public OwlVariable visitStat_If(OwlParser.Stat_IfContext ctx) {
+        OwlVariable variable = visit(ctx.expr());
+        boolean isBoolean = requiresType(ctx, ctx.expr().getText(), variable, OwlType.BOOLEAN);
+        if (!isBoolean) {
+            return null;
+        }
+        Boolean condition = variable.getInner().getBoolValue();
+        if (Boolean.TRUE.equals(condition)) {
+            return visit(ctx.block());
+        }
+        return null;
+    }
+
+    @Override
+    public OwlVariable visitStat_If_Else(OwlParser.Stat_If_ElseContext ctx) {
+        OwlVariable variable = visit(ctx.expr());
+        boolean isBoolean = requiresType(ctx, ctx.expr().getText(), variable, OwlType.BOOLEAN);
+        if (!isBoolean) {
+            return null;
+        }
+        Boolean condition = variable.getInner().getBoolValue();
+        if (Boolean.TRUE.equals(condition)) {
+            return visit(ctx.block(0));
+        } else {
+            return visit(ctx.block(1));
         }
     }
 

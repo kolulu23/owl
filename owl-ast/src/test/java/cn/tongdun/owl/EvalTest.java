@@ -44,4 +44,18 @@ public class EvalTest {
         System.out.println(owlContext.getSemanticErrorList());
         System.out.println(variable.getInner().getValue());
     }
+
+    @Test
+    public void testIfElse() {
+        OwlEvalVisitor visitor = new OwlEvalVisitor(owlContext);
+        OwlVariableListener listener = new OwlVariableListener();
+        listener.setOwlContext(owlContext);
+        OwlParser parser = OwlTestUtil.getParserFromFile(OwlTestResource.PATH_TO_IFELSE);
+        ParseTree parseTree = parser.prog();
+        ParseTreeWalker walker = new ParseTreeWalker();
+        walker.walk(listener, parseTree);
+        OwlVariable variable = visitor.visit(parseTree);
+        System.out.println(owlContext.getSemanticErrorList());
+        System.out.println(variable.getInner().getValue());
+    }
 }
