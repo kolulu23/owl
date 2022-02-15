@@ -9,7 +9,6 @@ import java.nio.charset.StandardCharsets;
  * <br/>Created 2022/2/10 6:37 PM
  */
 public interface OwlExecutor {
-    // TODO Specify what should be returned
     Object execute(InputStream inputStream, Charset charset);
 
     default Object execute(InputStream inputStream) {

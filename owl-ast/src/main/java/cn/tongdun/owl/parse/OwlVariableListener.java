@@ -1,7 +1,6 @@
 package cn.tongdun.owl.parse;
 
 import cn.tongdun.owl.context.OwlContext;
-import cn.tongdun.owl.error.OwlSemanticError;
 import cn.tongdun.owl.generated.OwlBaseListener;
 import cn.tongdun.owl.generated.OwlParser;
 import cn.tongdun.owl.type.*;
@@ -16,6 +15,13 @@ import cn.tongdun.owl.type.*;
 public class OwlVariableListener extends OwlBaseListener {
 
     private OwlContext owlContext;
+
+    public OwlVariableListener() {
+    }
+
+    public OwlVariableListener(OwlContext owlContext) {
+        this.owlContext = owlContext;
+    }
 
     @Override
     public void enterDef_Int(OwlParser.Def_IntContext ctx) {
@@ -55,8 +61,10 @@ public class OwlVariableListener extends OwlBaseListener {
     @Override
     public void enterVar_GlobalVar(OwlParser.Var_GlobalVarContext ctx) {
         String globalId = ctx.getText();
-        OwlUnknownVariable<?> var = new OwlUnknownVariable<>(globalId);
-        owlContext.addVariable(var, true);
+        if (!owlContext.isVariableDeclared(globalId)){
+            OwlUnknownVariable<?> var = new OwlUnknownVariable<>(globalId);
+            owlContext.addVariable(var, true);
+        }
     }
 
     public OwlContext getOwlContext() {

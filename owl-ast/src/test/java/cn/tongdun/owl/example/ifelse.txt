@@ -1,4 +1,4 @@
-double b = 3.1415926;
+double b = -3.1415926;
 @simpleSetMetric;
 if (#isNotNull(b) and b >= 0) {
     int a = 4;
