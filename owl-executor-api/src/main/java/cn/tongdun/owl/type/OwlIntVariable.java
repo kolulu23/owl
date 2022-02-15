@@ -1,11 +1,10 @@
 package cn.tongdun.owl.type;
 
 /**
- * TODO Use Long instead
  * @author liutianlu
  * <br/>Created 2022/2/10 5:50 PM
  */
-public class OwlIntVariable extends OwlUnknownVariable<Integer> {
+public class OwlIntVariable extends OwlUnknownVariable<Long> {
     private static final long serialVersionUID = -954272864570577715L;
 
     public OwlIntVariable() {
@@ -18,7 +17,7 @@ public class OwlIntVariable extends OwlUnknownVariable<Integer> {
         this.type = OwlType.INT;
     }
 
-    public OwlIntVariable(Integer value) {
+    public OwlIntVariable(Long value) {
         this.type = OwlType.INT;
         this.value = value;
     }

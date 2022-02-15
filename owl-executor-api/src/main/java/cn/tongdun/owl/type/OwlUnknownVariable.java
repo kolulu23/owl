@@ -67,9 +67,9 @@ public class OwlUnknownVariable<T> extends OwlVariable implements Serializable {
      *
      * @return integer value, could be null
      */
-    public Integer getIntValue() {
+    public Long getIntValue() {
         if (OwlType.INT.equals(this.getType())) {
-            return value == null ? null : (Integer) value;
+            return value == null ? null : (Long) value;
         }
         return null;
     }

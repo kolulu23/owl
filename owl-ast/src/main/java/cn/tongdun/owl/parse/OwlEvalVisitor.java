@@ -214,14 +214,14 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
     @Override
     public OwlVariable visitLit_Int(OwlParser.Lit_IntContext ctx) {
         String str = ctx.INT().getText();
-        Integer val = Integer.valueOf(str);
+        Long val = Long.parseLong(str);
         return new OwlIntVariable(val);
     }
 
     @Override
     public OwlVariable visitLit_Neg_Int(OwlParser.Lit_Neg_IntContext ctx) {
         String str = ctx.INT().getText();
-        int val = Integer.parseInt(str);
+        long val = Long.parseLong(str);
         return new OwlIntVariable(-val);
     }
 
@@ -408,8 +408,8 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
         }
         if (OwlType.INT.equals(leftVar.getType()) && OwlType.INT.equals(rightVar.getType())) {
             OwlIntVariable result = new OwlIntVariable();
-            Integer leftValue = leftVar.getInner().getIntValue();
-            Integer rightValue = rightVar.getInner().getIntValue();
+            Long leftValue = leftVar.getInner().getIntValue();
+            Long rightValue = rightVar.getInner().getIntValue();
             // Yes, 'null + <any> = null'
             if (leftValue == null || rightValue == null) {
                 return null;
@@ -832,11 +832,11 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
         if (validVar) {
             OwlIntVariable result = new OwlIntVariable();
             if (OwlType.LIST.equals(variable.getType())) {
-                result.setValue(variable.getInner().getListValue().size());
+                result.setValue((long) variable.getInner().getListValue().size());
             } else if (OwlType.BOOLEAN.equals(variable.getType())) {
-                result.setValue(1);
+                result.setValue(1L);
             } else {
-                result.setValue(variable.getInner().getValue().toString().length());
+                result.setValue((long) variable.getInner().getValue().toString().length());
             }
             return result;
         }
