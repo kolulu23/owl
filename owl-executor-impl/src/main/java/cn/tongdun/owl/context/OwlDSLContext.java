@@ -73,6 +73,13 @@ public class OwlDSLContext implements OwlContext {
         return this.semanticErrorList;
     }
 
+    @Override
+    public void reset() {
+        this.variableMap.clear();
+        this.globalVariableMap.clear();
+        this.semanticErrorList.clear();
+    }
+
     public Map<String, OwlVariable> getVariableMap() {
         return variableMap;
     }

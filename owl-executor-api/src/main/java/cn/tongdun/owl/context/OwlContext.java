@@ -58,4 +58,10 @@ public interface OwlContext {
      * @return semantic error list
      */
     Collection<OwlSemanticError> listAllSemanticErrors();
+
+    /**
+     * Reset this context for another round of execution.
+     * Use it if you want to separate different DSL execution units.<br/>
+     */
+    void reset();
 }

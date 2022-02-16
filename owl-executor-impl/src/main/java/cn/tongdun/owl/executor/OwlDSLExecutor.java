@@ -7,6 +7,7 @@ import cn.tongdun.owl.generated.OwlParser;
 import cn.tongdun.owl.parse.OwlEvalVisitor;
 import cn.tongdun.owl.parse.OwlSyntaxErrorListener;
 import cn.tongdun.owl.parse.OwlVariableListener;
+import cn.tongdun.owl.type.OwlVariable;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.TokenStream;
@@ -47,7 +48,9 @@ public class OwlDSLExecutor implements OwlExecutor {
         ParseTree parseTree = compile(inputStream, charset);
         ParseTreeWalker walker = new ParseTreeWalker();
         walker.walk(this.owlVariableListener, parseTree);
-        return this.owlEvalVisitor.visit(parseTree);
+        OwlVariable variable = this.owlEvalVisitor.visit(parseTree);
+        this.owlEvalVisitor.getOwlContext().reset();
+        return variable;
     }
 
     @Override

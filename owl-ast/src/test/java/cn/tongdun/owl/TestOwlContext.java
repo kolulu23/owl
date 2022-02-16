@@ -72,6 +72,11 @@ public class TestOwlContext implements OwlContext {
         return this.getSemanticErrorList();
     }
 
+    @Override
+    public void reset() {
+
+    }
+
     public Map<String, OwlVariable> getVariableMap() {
         return variableMap;
     }

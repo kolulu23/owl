@@ -24,9 +24,8 @@ public class ExecutorTest {
 
     private static OwlDSLExecutor owlDSLExecutor;
 
-    private static FileInputStream testFile;
-
     private static final String TEST_FILE = "src/test/java/cn/tongdun/owl/example/ifelse.txt";
+    private static final String TEST_FILE_FUNC = "src/test/java/cn/tongdun/owl/example/func.txt";
 
     @BeforeAll
     static void init() throws IOException {
@@ -35,23 +34,22 @@ public class ExecutorTest {
         globalVar.setValue(-11911L);
         owlDSLContext.addVariable(globalVar, true);
         owlDSLExecutor = new OwlDSLExecutor(owlDSLContext);
-        testFile = new FileInputStream(new File(TEST_FILE).getCanonicalPath());
     }
 
     @Test
-    public void testCompile() {
-        ParseTree parseTree = (ParseTree) owlDSLExecutor.compile(testFile);
+    public void testCompile() throws IOException {
+        ParseTree parseTree = (ParseTree) owlDSLExecutor.compile(new FileInputStream(new File(TEST_FILE).getCanonicalPath()));
         Assertions.assertNotNull(parseTree);
         System.out.println(parseTree.toStringTree());
     }
 
     @Test
-    public void testExecution() {
-        Object result = owlDSLExecutor.execute(testFile);
+    public void testExecution() throws IOException {
+        Object result = owlDSLExecutor.execute(new FileInputStream(new File(TEST_FILE).getCanonicalPath()));
         Assertions.assertNotNull(result);
-        System.out.println(owlDSLContext.getVariableMap());
-        System.out.println(owlDSLContext.listAllGlobalVariables());
-        System.out.println(owlDSLContext.listAllSemanticErrors());
+        System.out.println(result);
+
+        result = owlDSLExecutor.execute(new FileInputStream(new File(TEST_FILE_FUNC).getCanonicalPath()));
         System.out.println(result);
     }
 }
