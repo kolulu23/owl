@@ -2,7 +2,6 @@ package cn.tongdun.owl.executor;
 
 import cn.tongdun.owl.context.OwlContext;
 import cn.tongdun.owl.context.OwlDSLContext;
-import cn.tongdun.owl.error.OwlError;
 import cn.tongdun.owl.generated.OwlLexer;
 import cn.tongdun.owl.generated.OwlParser;
 import cn.tongdun.owl.parse.OwlEvalVisitor;
@@ -18,7 +17,6 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author liutianlu

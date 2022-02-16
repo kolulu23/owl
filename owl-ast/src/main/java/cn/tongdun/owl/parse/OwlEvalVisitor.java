@@ -37,7 +37,7 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
      * Scale for divide operation. <br/>
      * Affects dividing and statistics calculating functions.
      */
-    private int divideScale;
+    private int defaultScale;
 
     /**
      * Scale for rounding.<br/>
@@ -54,7 +54,7 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
 
     public OwlEvalVisitor(OwlContext owlContext) {
         this.owlContext = owlContext;
-        this.divideScale = 4;
+        this.defaultScale = 6;
         this.roundingScale = 1;
     }
 
@@ -400,7 +400,7 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
     @Override
     public OwlVariable visitDef_List(OwlParser.Def_ListContext ctx) {
         String id = ctx.ID().getText();
-        OwlVariable variable = visit(ctx.arr());
+        OwlVariable variable = visit(ctx.expr());
         boolean typeCheckOk = requiresType(ctx, id, variable, OwlType.LIST);
         if (typeCheckOk) {
             variable.setId(id);
@@ -432,7 +432,7 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
                 owlContext.addSemanticError(error);
                 return null;
             }
-            result.setValue(leftValue.divide(rightValue, divideScale, RoundingMode.HALF_UP));
+            result.setValue(leftValue.divide(rightValue, defaultScale, RoundingMode.HALF_UP));
         }
         return result;
     }
@@ -646,14 +646,24 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
 
     @Override
     public OwlVariable visitFn_ToNumber(OwlParser.Fn_ToNumberContext ctx) {
-        OwlVariable variable = visit(ctx.expr());
+        OwlVariable variable = visit(ctx.expr(0));
+        int scale = this.defaultScale;
+        if (ctx.scale != null) {
+            Long scaleVar = visit(ctx.scale).getInner().getIntValue();
+            scale = scaleVar == null ? this.defaultScale : scaleVar.intValue();
+        }
         if (requiresNonNullVariable(variable)) {
-            if (OwlType.INT.equals(variable.getType()) || OwlType.DOUBLE.equals(variable.getType())) {
+            OwlDoubleVariable result = new OwlDoubleVariable();
+            if (OwlType.INT.equals(variable.getType())) {
                 return variable;
+            } else if (OwlType.DOUBLE.equals(variable.getType())) {
+                BigDecimal scaledValue = variable.getInner().getDoubleValue();
+                result.setValue(scaledValue.round(new MathContext(scale, RoundingMode.HALF_UP)));
+                return result;
             } else if (OwlType.STRING.equals(variable.getType())) {
-                OwlDoubleVariable doubleVariable = new OwlDoubleVariable();
-                doubleVariable.setValue(new BigDecimal(variable.getInner().getStringValue()));
-                return doubleVariable;
+                BigDecimal convertedValue = new BigDecimal(variable.getInner().getStringValue());
+                result.setValue(convertedValue.round(new MathContext(scale, RoundingMode.HALF_UP)));
+                return result;
             } else {
                 OwlSemanticError semanticError = OwlSemanticErrorFactory
                         .wrongTypeForFunc(ctx, ctx.FN_TONUMBER().getText(), variable.getType());
@@ -932,7 +942,7 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
                     }
                 }
             }
-            result.setValue(sum.divide(size, this.divideScale, RoundingMode.HALF_UP));
+            result.setValue(sum.divide(size, this.defaultScale, RoundingMode.HALF_UP));
             return result;
         }
         return null;
@@ -1065,12 +1075,12 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
         this.owlContext = owlContext;
     }
 
-    public int getDivideScale() {
-        return divideScale;
+    public int getDefaultScale() {
+        return defaultScale;
     }
 
-    public void setDivideScale(int divideScale) {
-        this.divideScale = divideScale;
+    public void setDefaultScale(int defaultScale) {
+        this.defaultScale = defaultScale;
     }
 
     public int getRoundingScale() {

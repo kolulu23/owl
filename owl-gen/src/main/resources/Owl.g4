@@ -28,7 +28,7 @@ vardef      : T_INT ID '=' expr                                 # Def_Int
             | T_DOUBLE ID '=' expr                              # Def_Double
             | T_BOOLEAN ID '=' expr                             # Def_Boolean
             | T_STRING ID '=' expr                              # Def_String
-            | T_LIST ID '=' arr                                 # Def_List
+            | T_LIST ID '=' expr                                # Def_List
             ;
 /**
  * All kinds of expressions.
@@ -70,7 +70,7 @@ expr        : expr op=(MUL|DIV) expr                            # MulDiv
             | FN_ISNULL LP expr RP                              # Fn_IsNull
             | FN_ISNOTNULL LP expr RP                           # Fn_IsNotNull
             | FN_TOSTRING LP expr RP                            # Fn_ToString
-            | FN_TONUMBER LP expr RP                            # Fn_ToNumber
+            | FN_TONUMBER LP expr (',' scale=expr)? RP          # Fn_ToNumber
             ;
 
 /**
@@ -79,6 +79,7 @@ expr        : expr op=(MUL|DIV) expr                            # MulDiv
 var         : ID                                                # Var_Identifier
             | glbvar                                            # Var_GlobalVar
             | literal                                           # Var_Literal
+            | arr                                               # Var_Arr
             ;
 
 arr         : '[' var (',' var)* ']'                            # Arr_Sized

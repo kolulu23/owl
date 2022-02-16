@@ -4,7 +4,6 @@ import cn.tongdun.owl.context.OwlDSLContext;
 import cn.tongdun.owl.executor.OwlDSLExecutionResult;
 import cn.tongdun.owl.executor.OwlDSLExecutor;
 import cn.tongdun.owl.type.OwlIntVariable;
-import cn.tongdun.owl.type.OwlVariable;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -12,7 +11,6 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 /**
@@ -51,7 +49,7 @@ public class ExecutorTest {
         System.out.println(result.getResult());
 
         result = (OwlDSLExecutionResult) owlDSLExecutor.execute(new FileInputStream(new File(TEST_FILE_FUNC).getCanonicalPath()));
-        Assertions.assertFalse(result.isSuccess());
-        System.out.println(result.getErrorList());
+        Assertions.assertTrue(result.isSuccess());
+        System.out.println(result.getResult());
     }
 }

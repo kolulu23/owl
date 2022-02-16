@@ -33,7 +33,7 @@ public class EvalTest {
     @Test
     public void testBasicArithmeticExpr() {
         OwlEvalVisitor visitor = new OwlEvalVisitor(owlContext);
-        visitor.setDivideScale(6);
+        visitor.setDefaultScale(6);
         OwlVariableListener listener = new OwlVariableListener();
         listener.setOwlContext(owlContext);
         OwlParser parser = OwlTestUtil.getParserFromString(OwlTestResource.FUN_1);

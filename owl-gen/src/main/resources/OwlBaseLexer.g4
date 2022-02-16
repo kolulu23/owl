@@ -240,9 +240,12 @@ FN_ISNOTNULL                : K_FN_PREFIX 'isNotNull' ;
 FN_TOSTRING                 : K_FN_PREFIX 'toString' ;
 
 /**
- * @arg : string | int | double
+ * @arg1 : string | int | double
+ * @arg2 : int (optional)
  * @returns : int | double
  * Convert arg to number. Returns null if arg cannot be converted.
+ * If @arg2 is provided, then it will be used as number-scale when converting @arg1 to double.
+ * Default value of @arg2 is 6.
  */
 FN_TONUMBER                 : K_FN_PREFIX 'toNumber' ;
 

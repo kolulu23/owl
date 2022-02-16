@@ -9,6 +9,9 @@ import org.antlr.v4.runtime.ParserRuleContext;
  * <br/>Created 2022/2/10 7:08 PM
  */
 public class OwlSemanticErrorFactory {
+    private static final String OR_MSG = " or ";
+    private static final String AND_MSG = " and ";
+
     /**
      * Construct a semantic error from given context
      *
@@ -39,10 +42,9 @@ public class OwlSemanticErrorFactory {
 
     public static OwlSemanticError wrongTypeForFunc(ParserRuleContext context, String funcName, OwlType actualType) {
         OwlSemanticError semanticError = semanticErrorOf(context);
-        // TODO
         semanticError.setMessage(String.format(OwlSemanticErrorEnum.WRONG_TYPE_FOR_FUNCTION.getErrorMsg(),
                 funcName,
-                "TODO",
+                OwlType.INT.name() + OR_MSG + OwlType.DOUBLE.name() + OR_MSG + OwlType.STRING.name(),
                 actualType));
         return semanticError;
     }
