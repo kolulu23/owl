@@ -13,7 +13,8 @@ public enum OwlSemanticErrorEnum {
     DSL_DOES_NOT_RETURN("DSL unit must have a 'return expression' as its last statement to be executed"),
     NUMBER_TYPE_REQUIRED("This operation requires a number type, i.e. INT or DOUBLE. Found %s"),
     DIVIDE_ZERO("Dividing zero leads to undefined behaviour"),
-    NON_OPERABLE_ARG_FOR_FUNCTION("None of provided args is operable for this function %s");
+    NON_OPERABLE_ARG_FOR_FUNCTION("None of provided args is operable for this function %s"),
+    WRONG_TYPE_FOR_FUNCTION("Function %s wishes %s type, but %s is provided");
     private final String errorMsg;
 
     OwlSemanticErrorEnum(String errorMsg) {

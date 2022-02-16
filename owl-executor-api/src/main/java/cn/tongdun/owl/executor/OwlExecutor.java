@@ -9,9 +9,9 @@ import java.nio.charset.StandardCharsets;
  * <br/>Created 2022/2/10 6:37 PM
  */
 public interface OwlExecutor {
-    Object execute(InputStream inputStream, Charset charset);
+    OwlExecutionResult execute(InputStream inputStream, Charset charset);
 
-    default Object execute(InputStream inputStream) {
+    default OwlExecutionResult execute(InputStream inputStream) {
         return execute(inputStream, StandardCharsets.UTF_8);
     }
 

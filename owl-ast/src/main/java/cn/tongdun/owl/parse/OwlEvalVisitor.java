@@ -654,6 +654,10 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
                 OwlDoubleVariable doubleVariable = new OwlDoubleVariable();
                 doubleVariable.setValue(new BigDecimal(variable.getInner().getStringValue()));
                 return doubleVariable;
+            } else {
+                OwlSemanticError semanticError = OwlSemanticErrorFactory
+                        .wrongTypeForFunc(ctx, ctx.FN_TONUMBER().getText(), variable.getType());
+                owlContext.addSemanticError(semanticError);
             }
         }
         return null;

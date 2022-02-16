@@ -1,4 +1,4 @@
 string a = "valentine";
 string b = "day";
 list c = [a, b, "Feb 14"];
-return #len(#concat(a, b, #toString(c)));
+return #len(#concat(a, b, #toNumber(c)));

@@ -1,6 +1,7 @@
 package cn.tongdun.owl;
 
 import cn.tongdun.owl.context.OwlDSLContext;
+import cn.tongdun.owl.executor.OwlDSLExecutionResult;
 import cn.tongdun.owl.executor.OwlDSLExecutor;
 import cn.tongdun.owl.type.OwlIntVariable;
 import cn.tongdun.owl.type.OwlVariable;
@@ -45,11 +46,12 @@ public class ExecutorTest {
 
     @Test
     public void testExecution() throws IOException {
-        Object result = owlDSLExecutor.execute(new FileInputStream(new File(TEST_FILE).getCanonicalPath()));
-        Assertions.assertNotNull(result);
-        System.out.println(result);
+        OwlDSLExecutionResult result = (OwlDSLExecutionResult) owlDSLExecutor.execute(new FileInputStream(new File(TEST_FILE).getCanonicalPath()));
+        Assertions.assertTrue(result.isSuccess());
+        System.out.println(result.getResult());
 
-        result = owlDSLExecutor.execute(new FileInputStream(new File(TEST_FILE_FUNC).getCanonicalPath()));
-        System.out.println(result);
+        result = (OwlDSLExecutionResult) owlDSLExecutor.execute(new FileInputStream(new File(TEST_FILE_FUNC).getCanonicalPath()));
+        Assertions.assertFalse(result.isSuccess());
+        System.out.println(result.getErrorList());
     }
 }

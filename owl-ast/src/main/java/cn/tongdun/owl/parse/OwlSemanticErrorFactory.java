@@ -1,6 +1,7 @@
 package cn.tongdun.owl.parse;
 
 import cn.tongdun.owl.error.OwlSemanticError;
+import cn.tongdun.owl.type.OwlType;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
@@ -33,6 +34,16 @@ public class OwlSemanticErrorFactory {
     public static OwlSemanticError noOperableArgForFunc(ParserRuleContext context, String funcName) {
         OwlSemanticError semanticError = semanticErrorOf(context);
         semanticError.setMessage(String.format(OwlSemanticErrorEnum.NON_OPERABLE_ARG_FOR_FUNCTION.getErrorMsg(), funcName));
+        return semanticError;
+    }
+
+    public static OwlSemanticError wrongTypeForFunc(ParserRuleContext context, String funcName, OwlType actualType) {
+        OwlSemanticError semanticError = semanticErrorOf(context);
+        // TODO
+        semanticError.setMessage(String.format(OwlSemanticErrorEnum.WRONG_TYPE_FOR_FUNCTION.getErrorMsg(),
+                funcName,
+                "TODO",
+                actualType));
         return semanticError;
     }
 }

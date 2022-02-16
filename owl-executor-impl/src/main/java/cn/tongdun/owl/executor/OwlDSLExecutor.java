@@ -2,6 +2,7 @@ package cn.tongdun.owl.executor;
 
 import cn.tongdun.owl.context.OwlContext;
 import cn.tongdun.owl.context.OwlDSLContext;
+import cn.tongdun.owl.error.OwlError;
 import cn.tongdun.owl.generated.OwlLexer;
 import cn.tongdun.owl.generated.OwlParser;
 import cn.tongdun.owl.parse.OwlEvalVisitor;
@@ -16,6 +17,8 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author liutianlu
@@ -43,14 +46,27 @@ public class OwlDSLExecutor implements OwlExecutor {
     }
 
     @Override
-    public Object execute(InputStream inputStream, Charset charset) {
+    public OwlDSLExecutionResult execute(InputStream inputStream, Charset charset) {
         // TODO Fetch parseTree from cache
         ParseTree parseTree = compile(inputStream, charset);
-        ParseTreeWalker walker = new ParseTreeWalker();
-        walker.walk(this.owlVariableListener, parseTree);
-        OwlVariable variable = this.owlEvalVisitor.visit(parseTree);
-        this.owlEvalVisitor.getOwlContext().reset();
-        return variable;
+        OwlDSLExecutionResult result = new OwlDSLExecutionResult();
+        result.setSuccess(false);
+        if (this.owlSyntaxErrorListener.getSyntaxErrorList().isEmpty()) {
+            ParseTreeWalker walker = new ParseTreeWalker();
+            walker.walk(this.owlVariableListener, parseTree);
+            OwlVariable variable = this.owlEvalVisitor.visit(parseTree);
+            OwlContext owlContext = this.owlEvalVisitor.getOwlContext();
+            if (owlContext.listAllSemanticErrors().isEmpty()) {
+                result.setSuccess(true);
+                result.setResult(variable);
+            } else {
+                result.setErrorList(new ArrayList<>(owlContext.listAllSemanticErrors()));
+            }
+            owlContext.reset();
+        } else {
+            result.setErrorList(this.owlSyntaxErrorListener.getSyntaxErrorList());
+        }
+        return result;
     }
 
     @Override
@@ -64,6 +80,7 @@ public class OwlDSLExecutor implements OwlExecutor {
             e.printStackTrace();
         }
         assert parser != null;
+        parser.removeErrorListeners();
         parser.addErrorListener(this.owlSyntaxErrorListener);
         return parser.prog();
     }
