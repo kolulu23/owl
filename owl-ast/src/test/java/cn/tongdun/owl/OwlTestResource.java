@@ -15,7 +15,7 @@ public class OwlTestResource {
 
     public static final String INIT_ERROR = ";ino a = 0";
 
-    public static final String PATH_TO_IFELSE = "/Users/liutianlu/Projects/JavaProjects/owl/owl-ast/src/test/java/cn/tongdun/owl/example/ifelse.txt";
+    public static final String PATH_TO_IFELSE = "src/test/java/cn/tongdun/owl/example/ifelse.txt";
 
     public static final String ARITHMETIC = "string str = \"hello world of warcraft\";\n" +
             "int a = 1 + 1;\n" +

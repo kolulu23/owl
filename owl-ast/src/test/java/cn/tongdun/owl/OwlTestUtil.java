@@ -5,6 +5,7 @@ import cn.tongdun.owl.generated.OwlParser;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -21,7 +22,7 @@ public class OwlTestUtil {
     public static OwlParser getParserFromFile(String path){
         OwlLexer lexer = null;
         try {
-            lexer = new OwlLexer(CharStreams.fromFileName(path));
+            lexer = new OwlLexer(CharStreams.fromFileName(new File(path).getCanonicalPath()));
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 /**
  * @author liutianlu
@@ -25,16 +26,16 @@ public class ExecutorTest {
 
     private static FileInputStream testFile;
 
-    private static final String TEST_FILE = "/Users/liutianlu/Projects/JavaProjects/owl/owl-ast/src/test/java/cn/tongdun/owl/example/ifelse.txt";
+    private static final String TEST_FILE = "src/test/java/cn/tongdun/owl/example/ifelse.txt";
 
     @BeforeAll
-    static void init() throws FileNotFoundException {
+    static void init() throws IOException {
         owlDSLContext = new OwlDSLContext();
         OwlIntVariable globalVar = new OwlIntVariable("@simpleSetMetric");
         globalVar.setValue(-11911L);
         owlDSLContext.addVariable(globalVar, true);
         owlDSLExecutor = new OwlDSLExecutor(owlDSLContext);
-        testFile = new FileInputStream(new File(TEST_FILE));
+        testFile = new FileInputStream(new File(TEST_FILE).getCanonicalPath());
     }
 
     @Test
