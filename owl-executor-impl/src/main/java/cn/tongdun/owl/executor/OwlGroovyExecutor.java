@@ -28,10 +28,17 @@ public class OwlGroovyExecutor implements OwlExecutor {
     @Override
     public Object execute(InputStream inputStream, Charset charset) {
         Map<String, Object> outputParamMap = null;
+        String invokeMethodName = groovyContext.getInvokeMethodName();
+        Map<String, Object> inputParamMap = groovyContext.getInputParamMap();
         GroovyObject groovyObject = (GroovyObject) this.compile(inputStream, charset);
-        System.out.println("开始执行groovy脚本，调用的方法为：【" + groovyContext.getInvokeMethodName() + "】");
-        System.out.println("输入参数为：" + groovyContext.getInputParamMap());
-        outputParamMap = (Map<String, Object>) groovyObject.invokeMethod(groovyContext.getInvokeMethodName(), groovyContext.getInputParamMap());
+        System.out.println("开始执行groovy脚本，调用的方法为：【" + invokeMethodName + "】");
+        System.out.println("输入参数为：" + inputParamMap);
+        try {
+            outputParamMap = (Map<String, Object>) groovyObject.invokeMethod(invokeMethodName, inputParamMap);
+        } catch (Exception e) {
+            System.err.println("groovy脚本运行时出现异常：" + e);
+            e.printStackTrace();
+        }
         System.out.println("执行完成，结果为：" + outputParamMap);
 
         return outputParamMap;
@@ -49,6 +56,9 @@ public class OwlGroovyExecutor implements OwlExecutor {
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            System.err.println("groovy脚本编译时出现异常：" + e);
             e.printStackTrace();
         }
 

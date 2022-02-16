@@ -16,7 +16,10 @@ import java.util.Map;
  */
 public class GroovyExecutorTest {
 
-    private static final String TEST_GROOVY_FILE = "src/test/java/cn/tongdun/owl/example/demo.groovy";
+    private static final String TEST_CORRECT_GROOVY_FILE = "src/test/java/cn/tongdun/owl/example/CorrectGroovyDemo.groovy";
+
+    private static final String TEST_INCORRECT_GROOVY_FILE = "src/test/java/cn/tongdun/owl/example/IncorrectGroovyDemo.groovy";
+
 
     @Test
     void testExecute() throws IOException {
@@ -29,6 +32,6 @@ public class GroovyExecutorTest {
 
         // 加载执行器
         OwlGroovyExecutor groovyExecutor = new OwlGroovyExecutor(groovyContext);
-        Map<String, Object> resMap = (Map<String, Object>) groovyExecutor.execute(new FileInputStream(new File(TEST_GROOVY_FILE).getCanonicalPath()));
+        Map<String, Object> resMap = (Map<String, Object>) groovyExecutor.execute(new FileInputStream(new File(TEST_INCORRECT_GROOVY_FILE).getCanonicalPath()));
     }
 }
