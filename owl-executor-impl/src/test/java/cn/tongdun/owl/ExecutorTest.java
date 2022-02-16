@@ -3,6 +3,7 @@ package cn.tongdun.owl;
 import cn.tongdun.owl.context.OwlDSLContext;
 import cn.tongdun.owl.executor.OwlDSLExecutor;
 import cn.tongdun.owl.type.OwlIntVariable;
+import cn.tongdun.owl.type.OwlVariable;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -30,7 +31,7 @@ public class ExecutorTest {
     static void init() throws FileNotFoundException {
         owlDSLContext = new OwlDSLContext();
         OwlIntVariable globalVar = new OwlIntVariable("@simpleSetMetric");
-        globalVar.setValue(11911L);
+        globalVar.setValue(-11911L);
         owlDSLContext.addVariable(globalVar, true);
         owlDSLExecutor = new OwlDSLExecutor(owlDSLContext);
         testFile = new FileInputStream(new File(TEST_FILE));

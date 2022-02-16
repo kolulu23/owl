@@ -33,7 +33,7 @@ FN_MUL                      : K_FN_PREFIX 'mul' ;       // Not used
 FN_DIV                      : K_FN_PREFIX 'div' ;       // Not used
 
 /**
- * Ceiling a number, defualt precision is 1
+ * Ceiling a number, default precision is 1
  * @arg : int | double
  * @returns : int
  */
@@ -71,7 +71,7 @@ FN_MIN                      : K_FN_PREFIX 'min' ;
 FN_RAND                     : K_FN_PREFIX 'random' ;
 
 /**
- * Rounding a number with half-up method, defualt precision is 1.
+ * Rounding a number with half-up method, default precision is 1.
  * When arg2 is provided, this function will use it as rounding precision.
  * For example, #round(6.6667, 2) evaluates to 6.7 and #round(6.6667, 0) evaluates to 6.6667
  * @arg1 : int | double
@@ -115,11 +115,11 @@ FN_VARIANCE                 : K_FN_PREFIX 'variance' ;
 FN_TRIM                     : K_FN_PREFIX 'trim' ;
 
 /**
- * @arg1 : string | int | double
- * @arg2 : string | int | double
+ * @arg1 : string
+ * @arg2 : string
  * @arg3 : string (optional)
  * @returns : string
- * Concats two args together with a separator. int and double values are converted into string first.
+ * Concats two args together with a separator.
  */
 FN_CONCAT                   : K_FN_PREFIX 'concat' ;
 
@@ -165,7 +165,7 @@ FN_DEDUP                    : K_FN_PREFIX 'dedup' ;
  * @arg1 : list
  * @arg2 : boolean (optional)
  * @returns : list
- * Returns a ascending sorted list. Default value of @arg2 is true, meaning that it's doing ascending sort.
+ * Returns an ascending sorted list. Default value of @arg2 is true, meaning that it's doing ascending sort.
  * This function uses natural orders in this list, for example, 1 > 0, "axe" < "alice", "10" < "2".
  */
 FN_SORT                     : K_FN_PREFIX 'sort' ;
@@ -175,7 +175,7 @@ FN_SORT                     : K_FN_PREFIX 'sort' ;
  * @arg2 : int
  * @arg3 : int
  * @returns : string
- * Returns a subtring of arg1 start from arg2 end to arg3. Indices are start from 0.
+ * Returns a substring of arg1 start from arg2 end to arg3. Indices are start from 0.
  * For example, #substring('hello world', 0, 4) will return 'hello'.
  */
 FN_SUBSTR                   : K_FN_PREFIX 'substring' ;
