@@ -24,6 +24,12 @@ public class OwlGroovyContext {
      */
     private String invokedMethodName;
 
+    public void reset() {
+        this.inputParam = null;
+        this.outputParam = null;
+        this.invokedMethodName = null;
+    }
+
     public Object getInputParam() {
         return inputParam;
     }
