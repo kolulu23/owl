@@ -28,13 +28,13 @@ public class OwlGroovyExecutor implements OwlExecutor {
     @Override
     public Object execute(InputStream inputStream, Charset charset) {
         Map<String, Object> outputParamMap = null;
-        String invokeMethodName = groovyContext.getInvokeMethodName();
-        Map<String, Object> inputParamMap = groovyContext.getInputParamMap();
+        String invokedMethodName = groovyContext.getInvokedMethodName();
+        Object inputParam = groovyContext.getInputParam();
         GroovyObject groovyObject = (GroovyObject) this.compile(inputStream, charset);
-        System.out.println("开始执行groovy脚本，调用的方法为：【" + invokeMethodName + "】");
-        System.out.println("输入参数为：" + inputParamMap);
+        System.out.println("开始执行groovy脚本，调用的方法为：【" + invokedMethodName + "】");
+        System.out.println("输入参数为：" + inputParam);
         try {
-            outputParamMap = (Map<String, Object>) groovyObject.invokeMethod(invokeMethodName, inputParamMap);
+            outputParamMap = (Map<String, Object>) groovyObject.invokeMethod(invokedMethodName, inputParam);
         } catch (Exception e) {
             System.err.println("groovy脚本运行时出现异常：" + e);
             e.printStackTrace();

@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * 错误的groovy脚本演示
+ *
  * @author ao.li
  * @date 2022/2/16 8:02 下午
  */

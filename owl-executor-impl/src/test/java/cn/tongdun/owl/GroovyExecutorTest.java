@@ -20,15 +20,32 @@ public class GroovyExecutorTest {
 
     private static final String TEST_INCORRECT_GROOVY_FILE = "src/test/java/cn/tongdun/owl/example/IncorrectGroovyDemo.groovy";
 
+    private static final String EXECUTE_RESULT = "res";
 
     @Test
-    void testExecute() throws IOException {
+    void testCorrectExecute() throws IOException {
         // 构建上下文
         OwlGroovyContext groovyContext = new OwlGroovyContext();
-        groovyContext.setInvokeMethodName("run");
+        groovyContext.setInvokedMethodName("run");
         Map<String, Object> inputParamMap = new HashMap<>();
         inputParamMap.put("param1", "A001");
-        groovyContext.setInputParamMap(inputParamMap);
+        groovyContext.setInputParam(inputParamMap);
+
+        // 加载执行器
+        OwlGroovyExecutor groovyExecutor = new OwlGroovyExecutor(groovyContext);
+        Map<String, Object> resMap = (Map<String, Object>) groovyExecutor.execute(new FileInputStream(new File(TEST_CORRECT_GROOVY_FILE).getCanonicalPath()));
+
+        assert "2021".equals(String.valueOf(resMap.get(EXECUTE_RESULT)));
+    }
+
+    @Test
+    void testIncorrectExecute() throws IOException {
+        // 构建上下文
+        OwlGroovyContext groovyContext = new OwlGroovyContext();
+        groovyContext.setInvokedMethodName("run");
+        Map<String, Object> inputParamMap = new HashMap<>();
+        inputParamMap.put("param1", "A001");
+        groovyContext.setInputParam(inputParamMap);
 
         // 加载执行器
         OwlGroovyExecutor groovyExecutor = new OwlGroovyExecutor(groovyContext);

@@ -1,11 +1,8 @@
 package cn.tongdun.owl.context;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * groovy的执行上下文,
- * 存储groovy脚本的入参与出参
+ * 存储groovy脚本的入参、出参、调用方法名
  *
  * @author ao.li
  * @date 2022/2/16 3:53 下午
@@ -13,46 +10,41 @@ import java.util.Map;
 public class OwlGroovyContext {
 
     /**
-     * groovy脚本入参map
+     * groovy脚本入参
      */
-    private Map<String, Object> inputParamMap;
+    private Object inputParam;
 
     /**
-     * groovy脚本出参map
+     * groovy脚本出参
      */
-    private Map<String, Object> outputParamMap;
+    private Object outputParam;
 
     /**
      * groovy脚本入口方法
      */
-    private String invokeMethodName;
+    private String invokedMethodName;
 
-    public OwlGroovyContext() {
-        this.inputParamMap = new HashMap<>();
-        this.outputParamMap = new HashMap<>();
+    public Object getInputParam() {
+        return inputParam;
     }
 
-    public Map<String, Object> getInputParamMap() {
-        return inputParamMap;
+    public void setInputParam(Object inputParam) {
+        this.inputParam = inputParam;
     }
 
-    public void setInputParamMap(Map<String, Object> inputParamMap) {
-        this.inputParamMap = inputParamMap;
+    public Object getOutputParam() {
+        return outputParam;
     }
 
-    public Map<String, Object> getOutputParamMap() {
-        return outputParamMap;
+    public void setOutputParam(Object outputParam) {
+        this.outputParam = outputParam;
     }
 
-    public void setOutputParamMap(Map<String, Object> outputParamMap) {
-        this.outputParamMap = outputParamMap;
+    public String getInvokedMethodName() {
+        return invokedMethodName;
     }
 
-    public String getInvokeMethodName() {
-        return invokeMethodName;
-    }
-
-    public void setInvokeMethodName(String invokeMethodName) {
-        this.invokeMethodName = invokeMethodName;
+    public void setInvokedMethodName(String invokedMethodName) {
+        this.invokedMethodName = invokedMethodName;
     }
 }

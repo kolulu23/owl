@@ -1,6 +1,8 @@
 package cn.tongdun.owl.example
 
 /**
+ * 正确的groovy脚本演示
+ *
  * @author ao.li
  * @date 2022/2/16 2:18 下午
  */
