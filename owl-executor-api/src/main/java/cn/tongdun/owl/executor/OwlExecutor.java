@@ -1,6 +1,5 @@
 package cn.tongdun.owl.executor;
 
-import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
@@ -9,15 +8,21 @@ import java.nio.charset.StandardCharsets;
  * <br/>Created 2022/2/10 6:37 PM
  */
 public interface OwlExecutor {
-    OwlExecutionResult execute(InputStream inputStream, Charset charset);
+    OwlExecutionResult execute(OwlExecutionUnit executionUnit, Charset charset);
 
-    default OwlExecutionResult execute(InputStream inputStream) {
-        return execute(inputStream, StandardCharsets.UTF_8);
+    default OwlExecutionResult execute(OwlExecutionUnit executionUnit) {
+        return execute(executionUnit, StandardCharsets.UTF_8);
     }
 
-    Object compile(InputStream inputStream, Charset charset);
+    Object compile(OwlExecutionUnit executionUnit, Charset charset);
 
-    default Object compile(InputStream inputStream) {
-        return compile(inputStream, StandardCharsets.UTF_8);
+    default Object compile(OwlExecutionUnit executionUnit) {
+        return compile(executionUnit, StandardCharsets.UTF_8);
+    }
+
+    /**
+     * If you need reset state after execution, implement this method.
+     */
+    default void resetState() {
     }
 }
