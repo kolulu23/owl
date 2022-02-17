@@ -10,7 +10,7 @@ import java.util.List;
 
 /**
  * groovy的执行上下文,
- * 存储groovy脚本的入参、出参、调用方法名
+ * 存储groovy脚本的入参、出参、调用方法名、编译或运行时的错误信息等
  *
  * @author ao.li
  * @date 2022/2/16 3:53 下午
@@ -86,7 +86,7 @@ public class OwlGroovyContext implements OwlContext {
     public void reset() {
         this.inputParam = null;
         this.outputParam = null;
-        this.invokedMethodName = null;
+        this.invokedMethodName = DEFAULT_INVOKED_METHOD_NAME;
         this.semanticErrorList.clear();
     }
 
