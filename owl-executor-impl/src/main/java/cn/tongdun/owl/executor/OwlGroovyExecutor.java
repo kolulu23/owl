@@ -36,10 +36,11 @@ public class OwlGroovyExecutor implements OwlExecutor {
             outputParam = groovyObject.invokeMethod(invokedMethodName, inputParam);
         } catch (Exception e) {
             System.err.println("groovy脚本运行时出现异常：" + e);
+            groovyContext.addSemanticErrorFromException(e);
             e.printStackTrace();
         }
         System.out.println("执行完成，结果为：" + outputParam);
-        groovyContext.reset();
+        // groovyContext.reset();
 
         return outputParam;
     }
@@ -52,13 +53,16 @@ public class OwlGroovyExecutor implements OwlExecutor {
             Class groovyClass = groovyClassLoader.parseClass(groovyText);
             groovyObject = (GroovyObject) groovyClass.newInstance();
         } catch (IOException e) {
+            System.err.println("输入流操作异常：" + e);
+            groovyContext.addSemanticErrorFromException(e);
             e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException e) {
+            System.err.println("无法为该class创建实例：" + e);
+            groovyContext.addSemanticErrorFromException(e);
             e.printStackTrace();
         } catch (Exception e) {
             System.err.println("groovy脚本编译时出现异常：" + e);
+            groovyContext.addSemanticErrorFromException(e);
             e.printStackTrace();
         }
 

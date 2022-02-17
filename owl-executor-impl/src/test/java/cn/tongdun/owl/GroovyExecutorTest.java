@@ -50,5 +50,6 @@ public class GroovyExecutorTest {
         // 加载执行器
         OwlGroovyExecutor groovyExecutor = new OwlGroovyExecutor(groovyContext);
         Map<String, Object> resMap = (Map<String, Object>) groovyExecutor.execute(new FileInputStream(new File(TEST_INCORRECT_GROOVY_FILE).getCanonicalPath()));
+        System.out.println("语义错误信息：" + groovyContext.listAllSemanticErrors());
     }
 }
