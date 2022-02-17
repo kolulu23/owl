@@ -34,16 +34,16 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
     private OwlContext owlContext;
 
     /**
-     * Scale for divide operation. <br/>
+     * Scale for divide operation and rounding. <br/>
      * Affects dividing and statistics calculating functions.
+     * Scale indicates that how many digit behind a float point should be.
      */
     private int defaultScale;
 
     /**
-     * Scale for rounding.<br/>
-     * Affects ceiling and flooring.
+     * Scale for ceiling and flooring.<br/>
      */
-    private int roundingScale;
+    private int ceilFloorScale;
 
     /**
      * For Variance and Standard deviation
@@ -55,7 +55,7 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
     public OwlEvalVisitor(OwlContext owlContext) {
         this.owlContext = owlContext;
         this.defaultScale = 6;
-        this.roundingScale = 1;
+        this.ceilFloorScale = 0;
     }
 
     //************************ Helper Methods ******************************
@@ -712,11 +712,11 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
             if (OwlType.INT.equals(variable.getType())) {
                 return variable;
             } else {
-                int roundingScale = ctx.INT() == null ? this.roundingScale : Integer.parseInt(ctx.INT().getText());
+                int roundingScale = ctx.INT() == null ? this.defaultScale : Integer.parseInt(ctx.INT().getText());
                 BigDecimal value = variable.getInner().getDoubleValue();
                 if (value != null) {
                     OwlDoubleVariable roundingNumber = new OwlDoubleVariable();
-                    roundingNumber.setValue(value.round(new MathContext(roundingScale, RoundingMode.HALF_UP)));
+                    roundingNumber.setValue(value.setScale(roundingScale, RoundingMode.HALF_UP));
                     return roundingNumber;
                 }
             }
@@ -735,7 +735,7 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
                 BigDecimal value = variable.getInner().getDoubleValue();
                 if (value != null) {
                     OwlDoubleVariable ceilingNumber = new OwlDoubleVariable();
-                    ceilingNumber.setValue(value.round(new MathContext(this.roundingScale, RoundingMode.CEILING)));
+                    ceilingNumber.setValue(value.setScale(this.ceilFloorScale, RoundingMode.CEILING));
                     return ceilingNumber;
                 }
             }
@@ -754,7 +754,7 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
                 BigDecimal value = variable.getInner().getDoubleValue();
                 if (value != null) {
                     OwlDoubleVariable floorNumber = new OwlDoubleVariable();
-                    floorNumber.setValue(value.round(new MathContext(this.roundingScale, RoundingMode.FLOOR)));
+                    floorNumber.setValue(value.setScale(this.ceilFloorScale, RoundingMode.FLOOR));
                     return floorNumber;
                 }
             }
@@ -1083,11 +1083,11 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
         this.defaultScale = defaultScale;
     }
 
-    public int getRoundingScale() {
-        return roundingScale;
+    public int getCeilFloorScale() {
+        return ceilFloorScale;
     }
 
-    public void setRoundingScale(int roundingScale) {
-        this.roundingScale = roundingScale;
+    public void setCeilFloorScale(int ceilFloorScale) {
+        this.ceilFloorScale = ceilFloorScale;
     }
 }
