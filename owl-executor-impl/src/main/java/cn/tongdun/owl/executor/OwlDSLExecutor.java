@@ -126,5 +126,7 @@ public class OwlDSLExecutor implements OwlExecutor {
 
     public void setOwlContext(OwlContext owlContext) {
         this.owlContext = owlContext;
+        this.owlVariableListener.setOwlContext(owlContext);
+        this.owlEvalVisitor.setOwlContext(owlContext);
     }
 }
