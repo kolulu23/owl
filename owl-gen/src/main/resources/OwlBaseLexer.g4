@@ -33,14 +33,14 @@ FN_MUL                      : K_FN_PREFIX 'mul' ;       // Not used
 FN_DIV                      : K_FN_PREFIX 'div' ;       // Not used
 
 /**
- * Ceiling a number, default precision is 1
+ * Ceiling a number, default scale is 0
  * @arg : int | double
  * @returns : int
  */
 FN_CEIL                     : K_FN_PREFIX 'ceil' ;
 
 /**
- * Floor a number, defualt precision is 1
+ * Floor a number, defualt scale is 0
  * @arg : int | double
  * @returns : int
  */
@@ -72,8 +72,8 @@ FN_RAND                     : K_FN_PREFIX 'random' ;
 
 /**
  * Rounding a number with half-up method, default precision is 1.
- * When arg2 is provided, this function will use it as rounding precision.
- * For example, #round(6.6667, 2) evaluates to 6.7 and #round(6.6667, 0) evaluates to 6.6667
+ * When arg2 is provided, this function will use it as rounding precision. arg2 must not be negative
+ * For example, #round(6.6667, 2) evaluates to 6.67 and #round(6.6667, 0) evaluates to 7
  * @arg1 : int | double
  * @arg2 : int
  * @returns : double
@@ -240,9 +240,12 @@ FN_ISNOTNULL                : K_FN_PREFIX 'isNotNull' ;
 FN_TOSTRING                 : K_FN_PREFIX 'toString' ;
 
 /**
- * @arg : string | int | double
+ * @arg1 : string | int | double
+ * @arg2 : int (optional)
  * @returns : int | double
  * Convert arg to number. Returns null if arg cannot be converted.
+ * If @arg2 is provided, then it will be used as number-scale when converting @arg1 to double.
+ * Default value of @arg2 is 6.
  */
 FN_TONUMBER                 : K_FN_PREFIX 'toNumber' ;
 

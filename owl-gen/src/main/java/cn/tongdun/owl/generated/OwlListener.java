@@ -836,6 +836,22 @@ public interface OwlListener extends ParseTreeListener {
     void exitVar_Literal(OwlParser.Var_LiteralContext ctx);
 
     /**
+     * Enter a parse tree produced by the {@code Var_Arr}
+     * labeled alternative in {@link OwlParser#var}.
+     *
+     * @param ctx the parse tree
+     */
+    void enterVar_Arr(OwlParser.Var_ArrContext ctx);
+
+    /**
+     * Exit a parse tree produced by the {@code Var_Arr}
+     * labeled alternative in {@link OwlParser#var}.
+     *
+     * @param ctx the parse tree
+     */
+    void exitVar_Arr(OwlParser.Var_ArrContext ctx);
+
+    /**
      * Enter a parse tree produced by the {@code Arr_Sized}
      * labeled alternative in {@link OwlParser#arr}.
      *

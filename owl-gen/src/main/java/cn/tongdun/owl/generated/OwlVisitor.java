@@ -477,6 +477,15 @@ public interface OwlVisitor<T> extends ParseTreeVisitor<T> {
     T visitVar_Literal(OwlParser.Var_LiteralContext ctx);
 
     /**
+     * Visit a parse tree produced by the {@code Var_Arr}
+     * labeled alternative in {@link OwlParser#var}.
+     *
+     * @param ctx the parse tree
+     * @return the visitor result
+     */
+    T visitVar_Arr(OwlParser.Var_ArrContext ctx);
+
+    /**
      * Visit a parse tree produced by the {@code Arr_Sized}
      * labeled alternative in {@link OwlParser#arr}.
      *

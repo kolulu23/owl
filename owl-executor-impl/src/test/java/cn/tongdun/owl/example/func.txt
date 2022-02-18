@@ -1,4 +1,5 @@
-string a = "valentine";
-string b = "day";
-list c = [a, b, "Feb 14"];
-return #len(#concat(a, b, #toString(c)));
+int a = 998231313;
+string b = "2312.4141123312";
+double c = 2312.5191123312;
+// #round's second parameter can only be positive
+return #round(c, 2);

@@ -1,6 +1,7 @@
 package cn.tongdun.owl.parse;
 
 import cn.tongdun.owl.error.OwlSemanticError;
+import cn.tongdun.owl.type.OwlType;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
@@ -8,6 +9,9 @@ import org.antlr.v4.runtime.ParserRuleContext;
  * <br/>Created 2022/2/10 7:08 PM
  */
 public class OwlSemanticErrorFactory {
+    private static final String OR_MSG = " or ";
+    private static final String AND_MSG = " and ";
+
     /**
      * Construct a semantic error from given context
      *
@@ -50,6 +54,15 @@ public class OwlSemanticErrorFactory {
     public static OwlSemanticError noOperableArgForFunc(ParserRuleContext context, String funcName) {
         OwlSemanticError semanticError = semanticErrorOf(context);
         semanticError.setMessage(String.format(OwlSemanticErrorEnum.NON_OPERABLE_ARG_FOR_FUNCTION.getErrorMsg(), funcName));
+        return semanticError;
+    }
+
+    public static OwlSemanticError wrongTypeForFunc(ParserRuleContext context, String funcName, OwlType actualType) {
+        OwlSemanticError semanticError = semanticErrorOf(context);
+        semanticError.setMessage(String.format(OwlSemanticErrorEnum.WRONG_TYPE_FOR_FUNCTION.getErrorMsg(),
+                funcName,
+                OwlType.INT.name() + OR_MSG + OwlType.DOUBLE.name() + OR_MSG + OwlType.STRING.name(),
+                actualType));
         return semanticError;
     }
 }

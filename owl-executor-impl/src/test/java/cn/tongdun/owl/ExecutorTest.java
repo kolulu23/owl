@@ -1,9 +1,10 @@
 package cn.tongdun.owl;
 
 import cn.tongdun.owl.context.OwlDSLContext;
+import cn.tongdun.owl.executor.OwlDSLExecutionResult;
 import cn.tongdun.owl.executor.OwlDSLExecutor;
+import cn.tongdun.owl.executor.OwlExecutionUnit;
 import cn.tongdun.owl.type.OwlIntVariable;
-import cn.tongdun.owl.type.OwlVariable;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -11,7 +12,6 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 /**
@@ -28,7 +28,7 @@ public class ExecutorTest {
     private static final String TEST_FILE_FUNC = "src/test/java/cn/tongdun/owl/example/func.txt";
 
     @BeforeAll
-    static void init() throws IOException {
+    static void init() {
         owlDSLContext = new OwlDSLContext();
         OwlIntVariable globalVar = new OwlIntVariable("@simpleSetMetric");
         globalVar.setValue(-11911L);
@@ -38,18 +38,46 @@ public class ExecutorTest {
 
     @Test
     public void testCompile() throws IOException {
-        ParseTree parseTree = (ParseTree) owlDSLExecutor.compile(new FileInputStream(new File(TEST_FILE).getCanonicalPath()));
+        OwlExecutionUnit unit = new OwlExecutionUnit();
+        unit.setName("Test Compile");
+        unit.setSource(new FileInputStream(new File(TEST_FILE).getCanonicalPath()));
+        ParseTree parseTree = (ParseTree) owlDSLExecutor.compile(unit);
         Assertions.assertNotNull(parseTree);
         System.out.println(parseTree.toStringTree());
     }
 
     @Test
     public void testExecution() throws IOException {
-        Object result = owlDSLExecutor.execute(new FileInputStream(new File(TEST_FILE).getCanonicalPath()));
-        Assertions.assertNotNull(result);
-        System.out.println(result);
+        OwlExecutionUnit unit = new OwlExecutionUnit();
+        unit.setName("Test Exec IF-ELSE");
+        unit.setSource(new FileInputStream(new File(TEST_FILE).getCanonicalPath()));
+        OwlDSLExecutionResult result = (OwlDSLExecutionResult) owlDSLExecutor.execute(unit);
+        System.out.println(result.getErrorList());
+        System.out.println(result.getResult());
 
-        result = owlDSLExecutor.execute(new FileInputStream(new File(TEST_FILE_FUNC).getCanonicalPath()));
-        System.out.println(result);
+        OwlExecutionUnit funcUnit = new OwlExecutionUnit();
+        funcUnit.setName("Test FUNC");
+        funcUnit.setSource(new FileInputStream(new File(TEST_FILE_FUNC).getCanonicalPath()));
+        result = (OwlDSLExecutionResult) owlDSLExecutor.execute(funcUnit);
+        System.out.println(result.getErrorList());
+        System.out.println(result.getResult());
+    }
+
+    @Test
+    public void testExecutionWithCache() throws IOException {
+        OwlExecutionUnit unit = new OwlExecutionUnit();
+        unit.setName("Test Exec With Cache");
+        unit.setSource(new FileInputStream(new File(TEST_FILE).getCanonicalPath()));
+        OwlDSLExecutionResult result = (OwlDSLExecutionResult) owlDSLExecutor.execute(unit);
+        System.out.println(result.getErrorList());
+        System.out.println(result.getResult());
+
+        // Owl context is reset after execution, all global variables are lost
+        OwlIntVariable globalVar = new OwlIntVariable("@simpleSetMetric");
+        globalVar.setValue(-11911L);
+        owlDSLContext.addVariable(globalVar, true);
+        result = (OwlDSLExecutionResult) owlDSLExecutor.execute(unit);
+        System.out.println(result.getErrorList());
+        System.out.println(result.getResult());
     }
 }

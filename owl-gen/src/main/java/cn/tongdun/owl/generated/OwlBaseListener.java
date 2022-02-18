@@ -952,6 +952,24 @@ public class OwlBaseListener implements OwlListener {
      * <p>The default implementation does nothing.</p>
      */
     @Override
+    public void enterVar_Arr(OwlParser.Var_ArrContext ctx) {
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override
+    public void exitVar_Arr(OwlParser.Var_ArrContext ctx) {
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override
     public void enterArr_Sized(OwlParser.Arr_SizedContext ctx) {
     }
 

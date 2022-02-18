@@ -590,6 +590,17 @@ public class OwlBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements Ow
      * {@link #visitChildren} on {@code ctx}.</p>
      */
     @Override
+    public T visitVar_Arr(OwlParser.Var_ArrContext ctx) {
+        return visitChildren(ctx);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation returns the result of calling
+     * {@link #visitChildren} on {@code ctx}.</p>
+     */
+    @Override
     public T visitArr_Sized(OwlParser.Arr_SizedContext ctx) {
         return visitChildren(ctx);
     }
