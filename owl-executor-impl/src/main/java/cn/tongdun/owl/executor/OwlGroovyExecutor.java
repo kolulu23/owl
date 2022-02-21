@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 
 /**
  * groovy脚本执行器
@@ -25,11 +26,13 @@ public class OwlGroovyExecutor implements OwlExecutor {
     }
 
     @Override
-    public Object execute(InputStream inputStream, Charset charset) {
+    public OwlExecutionResult execute(OwlExecutionUnit executionUnit, Charset charset) {
+        OwlGroovyExecutionResult groovyExecutionResult = new OwlGroovyExecutionResult();
+        groovyExecutionResult.setSuccess(false);
         Object outputParam = null;
         String invokedMethodName = groovyContext.getInvokedMethodName();
         Object inputParam = groovyContext.getInputParam();
-        GroovyObject groovyObject = (GroovyObject) this.compile(inputStream, charset);
+        GroovyObject groovyObject = (GroovyObject) this.compile(executionUnit, charset);
         System.out.println("开始执行groovy脚本，调用的方法为：【" + invokedMethodName + "】");
         System.out.println("输入参数为：" + inputParam);
         try {
@@ -40,18 +43,26 @@ public class OwlGroovyExecutor implements OwlExecutor {
             e.printStackTrace();
         }
         System.out.println("执行完成，结果为：" + outputParam);
-        // groovyContext.reset();
 
-        return outputParam;
+        if (groovyContext.listAllSemanticErrors().isEmpty()) {
+            groovyExecutionResult.setSuccess(true);
+            groovyExecutionResult.setResult(outputParam);
+        } else {
+            groovyExecutionResult.setErrorList(new ArrayList<>(groovyContext.listAllSemanticErrors()));
+        }
+        groovyContext.reset();
+
+        return groovyExecutionResult;
     }
 
     @Override
-    public Object compile(InputStream inputStream, Charset charset) {
-        GroovyObject groovyObject = null;
-        try (GroovyClassLoader groovyClassLoader = new GroovyClassLoader();) {
+    public Object compile(OwlExecutionUnit executionUnit, Charset charset) {
+        InputStream inputStream = executionUnit.getSource();
+        Object groovyInstance = null;
+        try (GroovyClassLoader groovyClassLoader = new GroovyClassLoader()) {
             String groovyText = IOGroovyMethods.getText(new InputStreamReader(inputStream, charset));
             Class groovyClass = groovyClassLoader.parseClass(groovyText);
-            groovyObject = (GroovyObject) groovyClass.newInstance();
+            groovyInstance = groovyClass.newInstance();
         } catch (IOException e) {
             System.err.println("输入流操作异常：" + e);
             groovyContext.addSemanticErrorFromException(e);
@@ -66,6 +77,6 @@ public class OwlGroovyExecutor implements OwlExecutor {
             e.printStackTrace();
         }
 
-        return groovyObject;
+        return groovyInstance;
     }
 }
