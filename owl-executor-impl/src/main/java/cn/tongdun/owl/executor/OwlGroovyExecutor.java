@@ -4,6 +4,8 @@ import cn.tongdun.owl.context.OwlGroovyContext;
 import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyObject;
 import org.codehaus.groovy.runtime.IOGroovyMethods;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,6 +21,8 @@ import java.util.ArrayList;
  */
 public class OwlGroovyExecutor implements OwlExecutor {
 
+    private Logger logger = LoggerFactory.getLogger(OwlGroovyExecutor.class);
+
     private OwlGroovyContext groovyContext;
 
     public OwlGroovyExecutor(OwlGroovyContext groovyContext) {
@@ -33,16 +37,15 @@ public class OwlGroovyExecutor implements OwlExecutor {
         String invokedMethodName = groovyContext.getInvokedMethodName();
         Object inputParam = groovyContext.getInputParam();
         GroovyObject groovyObject = (GroovyObject) this.compile(executionUnit, charset);
-        System.out.println("开始执行groovy脚本，调用的方法为：【" + invokedMethodName + "】");
-        System.out.println("输入参数为：" + inputParam);
+        logger.info("开始执行groovy脚本，调用的方法为：【{}】", invokedMethodName);
+        logger.info("输入参数为：{}", inputParam);
         try {
             outputParam = groovyObject.invokeMethod(invokedMethodName, inputParam);
         } catch (Exception e) {
-            System.err.println("groovy脚本运行时出现异常：" + e);
+            logger.error("groovy脚本运行时出现异常：", e);
             groovyContext.addSemanticErrorFromException(e);
-            e.printStackTrace();
         }
-        System.out.println("执行完成，结果为：" + outputParam);
+        logger.info("执行完成，结果为：{}", outputParam);
 
         if (groovyContext.listAllSemanticErrors().isEmpty()) {
             groovyExecutionResult.setSuccess(true);
@@ -64,17 +67,14 @@ public class OwlGroovyExecutor implements OwlExecutor {
             Class groovyClass = groovyClassLoader.parseClass(groovyText);
             groovyInstance = groovyClass.newInstance();
         } catch (IOException e) {
-            System.err.println("输入流操作异常：" + e);
+            logger.error("输入流操作异常：", e);
             groovyContext.addSemanticErrorFromException(e);
-            e.printStackTrace();
         } catch (InstantiationException | IllegalAccessException e) {
-            System.err.println("无法为该class创建实例：" + e);
+            logger.error("无法为该class创建实例：", e);
             groovyContext.addSemanticErrorFromException(e);
-            e.printStackTrace();
         } catch (Exception e) {
-            System.err.println("groovy脚本编译时出现异常：" + e);
+            logger.error("groovy脚本编译时出现异常：", e);
             groovyContext.addSemanticErrorFromException(e);
-            e.printStackTrace();
         }
 
         return groovyInstance;
