@@ -47,6 +47,12 @@
                 <artifactId>commons-math3</artifactId>
                 <version>3.6.1</version>
             </dependency>
+            <!--groovy -->
+            <dependency>
+                <groupId>org.codehaus.groovy</groupId>
+                <artifactId>groovy-all</artifactId>
+                <version>2.4.15</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 </project>
