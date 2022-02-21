@@ -1,6 +1,7 @@
 package cn.tongdun.owl.context;
 
 import cn.tongdun.owl.error.OwlSemanticError;
+import cn.tongdun.owl.error.OwlSyntaxError;
 import cn.tongdun.owl.type.OwlVariable;
 
 import java.util.Collection;
@@ -58,6 +59,20 @@ public interface OwlContext {
      * @return semantic error list
      */
     Collection<OwlSemanticError> listAllSemanticErrors();
+
+    /**
+     * Add a syntax error to this context
+     *
+     * @param owlSyntaxError syntax error
+     */
+    void addSyntaxError(OwlSyntaxError owlSyntaxError);
+
+    /**
+     * Get all syntax errors.
+     *
+     * @return syntax error list
+     */
+    Collection<OwlSyntaxError> listAllSyntaxErrors();
 
     /**
      * Reset this context for another round of execution.

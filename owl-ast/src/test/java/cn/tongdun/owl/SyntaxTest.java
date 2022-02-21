@@ -60,6 +60,6 @@ public class SyntaxTest {
         OwlSyntaxErrorListener errorListener = new OwlSyntaxErrorListener();
         parser.addErrorListener(errorListener);
         parser.prog();
-        System.out.println(errorListener.getSyntaxErrorList());
+        System.out.println(errorListener.getOwlContext().listAllSyntaxErrors());
     }
 }

@@ -7,6 +7,9 @@ import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * A simple implementation of parse tree cache.
+ * Use this cache or implement different caching logic.
+ *
  * @author liutianlu
  * <br/>Created 2022/2/17 11:04 AM
  */

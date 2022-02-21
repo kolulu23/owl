@@ -2,6 +2,7 @@ package cn.tongdun.owl;
 
 import cn.tongdun.owl.context.OwlContext;
 import cn.tongdun.owl.error.OwlSemanticError;
+import cn.tongdun.owl.error.OwlSyntaxError;
 import cn.tongdun.owl.type.OwlVariable;
 import org.junit.platform.commons.util.StringUtils;
 
@@ -70,6 +71,16 @@ public class TestOwlContext implements OwlContext {
     @Override
     public Collection<OwlSemanticError> listAllSemanticErrors() {
         return this.getSemanticErrorList();
+    }
+
+    @Override
+    public void addSyntaxError(OwlSyntaxError owlSyntaxError) {
+
+    }
+
+    @Override
+    public Collection<OwlSyntaxError> listAllSyntaxErrors() {
+        return null;
     }
 
     @Override

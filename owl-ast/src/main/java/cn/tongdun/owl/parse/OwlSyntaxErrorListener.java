@@ -1,5 +1,6 @@
 package cn.tongdun.owl.parse;
 
+import cn.tongdun.owl.context.OwlContext;
 import cn.tongdun.owl.error.OwlSyntaxError;
 import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.RecognitionException;
@@ -14,7 +15,7 @@ import java.util.List;
  */
 public class OwlSyntaxErrorListener extends BaseErrorListener {
 
-    private List<OwlSyntaxError> syntaxErrorList = new ArrayList<>();
+    private OwlContext owlContext;
 
     @Override
     public void syntaxError(Recognizer<?, ?> recognizer,
@@ -24,14 +25,14 @@ public class OwlSyntaxErrorListener extends BaseErrorListener {
                             String msg,
                             RecognitionException e) {
         OwlSyntaxError syntaxError = new OwlSyntaxError(line, charPositionInLine, msg);
-        this.syntaxErrorList.add(syntaxError);
+        this.owlContext.addSyntaxError(syntaxError);
     }
 
-    public List<OwlSyntaxError> getSyntaxErrorList() {
-        return syntaxErrorList;
+    public OwlContext getOwlContext() {
+        return owlContext;
     }
 
-    public void setSyntaxErrorList(List<OwlSyntaxError> syntaxErrorList) {
-        this.syntaxErrorList = syntaxErrorList;
+    public void setOwlContext(OwlContext owlContext) {
+        this.owlContext = owlContext;
     }
 }

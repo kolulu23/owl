@@ -1,6 +1,7 @@
 package cn.tongdun.owl.context;
 
 import cn.tongdun.owl.error.OwlSemanticError;
+import cn.tongdun.owl.error.OwlSyntaxError;
 import cn.tongdun.owl.type.OwlVariable;
 import org.apache.commons.lang3.StringUtils;
 
@@ -29,10 +30,16 @@ public class OwlDSLContext implements OwlContext {
      */
     private List<OwlSemanticError> semanticErrorList;
 
+    /**
+     * Syntax errors leading to failed parsing.
+     */
+    private List<OwlSyntaxError> syntaxErrorList;
+
     public OwlDSLContext() {
         this.setVariableMap(new HashMap<>());
         this.setGlobalVariableMap(new HashMap<>());
         this.setSemanticErrorList(new ArrayList<>());
+        this.setSyntaxErrorList(new ArrayList<>());
     }
 
     @Override
@@ -69,8 +76,18 @@ public class OwlDSLContext implements OwlContext {
     }
 
     @Override
+    public void addSyntaxError(OwlSyntaxError owlSyntaxError) {
+        this.syntaxErrorList.add(owlSyntaxError);
+    }
+
+    @Override
     public Collection<OwlSemanticError> listAllSemanticErrors() {
         return this.semanticErrorList;
+    }
+
+    @Override
+    public Collection<OwlSyntaxError> listAllSyntaxErrors() {
+        return this.syntaxErrorList;
     }
 
     @Override
@@ -78,6 +95,7 @@ public class OwlDSLContext implements OwlContext {
         this.variableMap.clear();
         this.globalVariableMap.clear();
         this.semanticErrorList.clear();
+        this.syntaxErrorList.clear();
     }
 
     public Map<String, OwlVariable> getVariableMap() {
@@ -98,5 +116,9 @@ public class OwlDSLContext implements OwlContext {
 
     public void setSemanticErrorList(List<OwlSemanticError> semanticErrorList) {
         this.semanticErrorList = semanticErrorList;
+    }
+
+    public void setSyntaxErrorList(List<OwlSyntaxError> syntaxErrorList) {
+        this.syntaxErrorList = syntaxErrorList;
     }
 }
