@@ -1,7 +1,6 @@
 package cn.tongdun.owl.context;
 
 import cn.tongdun.owl.error.OwlSemanticError;
-import cn.tongdun.owl.error.OwlSyntaxError;
 import cn.tongdun.owl.parse.OwlSemanticErrorFactory;
 import cn.tongdun.owl.type.OwlVariable;
 
@@ -81,16 +80,6 @@ public class OwlGroovyContext implements OwlContext {
     @Override
     public Collection<OwlSemanticError> listAllSemanticErrors() {
         return this.semanticErrorList;
-    }
-
-    @Override
-    public void addSyntaxError(OwlSyntaxError owlSyntaxError) {
-
-    }
-
-    @Override
-    public Collection<OwlSyntaxError> listAllSyntaxErrors() {
-        return null;
     }
 
     @Override
