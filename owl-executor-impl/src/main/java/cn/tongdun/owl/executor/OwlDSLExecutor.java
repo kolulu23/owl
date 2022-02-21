@@ -20,7 +20,6 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author liutianlu
@@ -34,8 +33,6 @@ public class OwlDSLExecutor implements OwlExecutor {
 
     private final OwlEvalVisitor owlEvalVisitor;
 
-    private final OwlExecutionCache<String, ParseTree> parseTreeCache;
-
     private OwlContext owlContext;
 
     public OwlDSLExecutor() {
@@ -43,7 +40,6 @@ public class OwlDSLExecutor implements OwlExecutor {
         this.owlSyntaxErrorListener = new OwlSyntaxErrorListener();
         this.owlVariableListener = new OwlVariableListener(owlContext);
         this.owlEvalVisitor = new OwlEvalVisitor(owlContext);
-        this.parseTreeCache = new OwlParseTreeCache(new ConcurrentHashMap<>());
     }
 
     public OwlDSLExecutor(OwlContext owlContext) {
@@ -51,7 +47,6 @@ public class OwlDSLExecutor implements OwlExecutor {
         this.owlSyntaxErrorListener = new OwlSyntaxErrorListener();
         this.owlVariableListener = new OwlVariableListener(this.owlContext);
         this.owlEvalVisitor = new OwlEvalVisitor(this.owlContext);
-        this.parseTreeCache = new OwlParseTreeCache(new ConcurrentHashMap<>());
     }
 
     public OwlDSLExecutor(OwlSyntaxErrorListener owlSyntaxErrorListener,
@@ -61,36 +56,32 @@ public class OwlDSLExecutor implements OwlExecutor {
         this.owlSyntaxErrorListener = owlSyntaxErrorListener;
         this.owlVariableListener = owlVariableListener;
         this.owlEvalVisitor = owlEvalVisitor;
-        this.parseTreeCache = parseTreeCache;
     }
 
     @Override
     public OwlDSLExecutionResult execute(OwlExecutionUnit executionUnit, Charset charset) {
         OwlDSLExecutionResult result = new OwlDSLExecutionResult();
         result.setSuccess(false);
-        ParseTree parseTree = parseTreeCache.getItem(executionUnit.getName());
+        ParseTree parseTree = compile(executionUnit, charset);
         if (parseTree == null) {
-            parseTree = compile(executionUnit, charset);
-            if (parseTree == null) {
-                OwlExecutionError executionError = OwlDSLExecutionErrorFactory.compileFailed(executionUnit.getName());
-                List<OwlExecutionError> errorList = new ArrayList<>();
-                errorList.add(executionError);
-                result.setErrorList(errorList);
-                return result;
-            }
+            OwlExecutionError executionError = OwlDSLExecutionErrorFactory.compileFailed(executionUnit.getName());
+            List<OwlExecutionError> errorList = new ArrayList<>();
+            errorList.add(executionError);
+            result.setErrorList(errorList);
+            return result;
         }
-        if (this.owlSyntaxErrorListener.getSyntaxErrorList().isEmpty()) {
+        if (this.owlContext.listAllSyntaxErrors().isEmpty()) {
             ParseTreeWalker walker = new ParseTreeWalker();
             walker.walk(this.owlVariableListener, parseTree);
             OwlVariable variable = this.owlEvalVisitor.visit(parseTree);
-            if (owlContext.listAllSemanticErrors().isEmpty()) {
+            if (this.owlContext.listAllSemanticErrors().isEmpty()) {
                 result.setSuccess(true);
                 result.setResult(variable);
             } else {
-                result.setErrorList(new ArrayList<>(owlContext.listAllSemanticErrors()));
+                result.setErrorList(new ArrayList<>(this.owlContext.listAllSemanticErrors()));
             }
         } else {
-            result.setErrorList(new ArrayList<>(this.owlSyntaxErrorListener.getSyntaxErrorList()));
+            result.setErrorList(new ArrayList<>(this.owlContext.listAllSemanticErrors()));
         }
         resetState();
         return result;
@@ -109,15 +100,44 @@ public class OwlDSLExecutor implements OwlExecutor {
         }
         parser.removeErrorListeners();
         parser.addErrorListener(this.owlSyntaxErrorListener);
-        ParseTree parseTree = parser.prog();
-        parseTreeCache.addItem(executionUnit.getName(), parseTree);
-        return parseTree;
+        return parser.prog();
     }
 
     @Override
     public void resetState() {
         this.owlContext.reset();
-        this.owlSyntaxErrorListener.getSyntaxErrorList().clear();
+    }
+
+    /**
+     * Execution directly from a ParseTree and a fresh OwlContext.
+     * If parseTree is non-null, there's no syntax error to handle.
+     *
+     * @param parseTree  Parse tree
+     * @param owlContext A new context for evaluate
+     * @param unitName   Execution unit name
+     * @return execution result
+     */
+    public OwlDSLExecutionResult executeFromParseTree(ParseTree parseTree, OwlContext owlContext, String unitName) {
+        this.setOwlContext(owlContext);
+        OwlDSLExecutionResult result = new OwlDSLExecutionResult();
+        result.setSuccess(false);
+        if (parseTree == null) {
+            OwlExecutionError executionError = OwlDSLExecutionErrorFactory.compileFailed(unitName);
+            List<OwlExecutionError> errorList = new ArrayList<>();
+            errorList.add(executionError);
+            result.setErrorList(errorList);
+            return result;
+        }
+        ParseTreeWalker walker = new ParseTreeWalker();
+        walker.walk(this.owlVariableListener, parseTree);
+        OwlVariable variable = this.owlEvalVisitor.visit(parseTree);
+        if (owlContext.listAllSemanticErrors().isEmpty()) {
+            result.setSuccess(true);
+            result.setResult(variable);
+        } else {
+            result.setErrorList(new ArrayList<>(owlContext.listAllSemanticErrors()));
+        }
+        return result;
     }
 
     public OwlContext getOwlContext() {
@@ -126,5 +146,7 @@ public class OwlDSLExecutor implements OwlExecutor {
 
     public void setOwlContext(OwlContext owlContext) {
         this.owlContext = owlContext;
+        this.owlVariableListener.setOwlContext(owlContext);
+        this.owlEvalVisitor.setOwlContext(owlContext);
     }
 }
