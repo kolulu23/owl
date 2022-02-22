@@ -8,28 +8,41 @@ public enum OwlType {
     /**
      * Maps to {@link Integer}
      */
-    INT,
+    INT("int"),
     /**
      * Maps to {@link java.math.BigDecimal}
      */
-    DOUBLE,
+    DOUBLE("double"),
     /**
      * Maps to {@link Boolean}
      */
-    BOOLEAN,
+    BOOLEAN("double"),
     /**
      * Maps to {@link String}
      */
-    STRING,
+    STRING("string"),
     /**
      * Maps to {@link java.util.List} interface
      */
-    LIST,
+    LIST("list"),
     /**
      * Unknown means type of such variables is not declared in DSL unit, usually because those variables are global
      * variables. <br/>
      * Hint: Global variables may have different type definition as they are declared by owl's user. In that case, user
      * must provide a way to translate their own types into owl's.
      */
-    UNKNOWN
+    UNKNOWN("");
+
+    /**
+     * Key for writing DSL
+     */
+    String key;
+
+    OwlType(String key) {
+        this.key = key;
+    }
+
+    public String getKey() {
+        return key;
+    }
 }
