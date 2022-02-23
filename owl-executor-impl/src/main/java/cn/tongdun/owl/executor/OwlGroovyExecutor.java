@@ -25,21 +25,32 @@ public class OwlGroovyExecutor implements OwlExecutor {
 
     private OwlGroovyContext groovyContext;
 
+    public OwlGroovyExecutor() {
+        this.groovyContext = new OwlGroovyContext();
+    }
+
     public OwlGroovyExecutor(OwlGroovyContext groovyContext) {
         this.groovyContext = groovyContext;
     }
 
     @Override
     public OwlExecutionResult execute(OwlExecutionUnit executionUnit, Charset charset) {
+        Object groovyInstance = this.compile(executionUnit, charset);
+
+        return this.executeFromInstance(groovyInstance);
+    }
+
+    public OwlExecutionResult executeFromInstance(Object groovyInstance) {
         OwlGroovyExecutionResult groovyExecutionResult = new OwlGroovyExecutionResult();
         groovyExecutionResult.setSuccess(false);
         Object outputParam = null;
+        assert groovyContext != null : "groovyContext is null!";
         String invokedMethodName = groovyContext.getInvokedMethodName();
         Object inputParam = groovyContext.getInputParam();
-        GroovyObject groovyObject = (GroovyObject) this.compile(executionUnit, charset);
         logger.info("开始执行groovy脚本，调用的方法为：【{}】", invokedMethodName);
         logger.info("输入参数为：{}", inputParam);
         try {
+            GroovyObject groovyObject = (GroovyObject) groovyInstance;
             outputParam = groovyObject.invokeMethod(invokedMethodName, inputParam);
         } catch (Exception e) {
             logger.error("groovy脚本运行时出现异常：", e);
@@ -78,5 +89,9 @@ public class OwlGroovyExecutor implements OwlExecutor {
         }
 
         return groovyInstance;
+    }
+
+    public void setGroovyContext(OwlGroovyContext groovyContext) {
+        this.groovyContext = groovyContext;
     }
 }
