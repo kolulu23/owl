@@ -658,11 +658,11 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
                 return variable;
             } else if (OwlType.DOUBLE.equals(variable.getType())) {
                 BigDecimal scaledValue = variable.getInner().getDoubleValue();
-                result.setValue(scaledValue.round(new MathContext(scale, RoundingMode.HALF_UP)));
+                result.setValue(scaledValue.setScale(scale, RoundingMode.HALF_UP));
                 return result;
             } else if (OwlType.STRING.equals(variable.getType())) {
                 BigDecimal convertedValue = new BigDecimal(variable.getInner().getStringValue());
-                result.setValue(convertedValue.round(new MathContext(scale, RoundingMode.HALF_UP)));
+                result.setValue(convertedValue.setScale(scale, RoundingMode.HALF_UP));
                 return result;
             } else {
                 OwlSemanticError semanticError = OwlSemanticErrorFactory

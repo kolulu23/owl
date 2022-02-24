@@ -2,4 +2,4 @@ int a = 998231313;
 string b = "2312.4141123312";
 double c = 2312.5191123312;
 // #round's second parameter can only be positive
-return #round(c, 2);
+return #toNumber("999.66676", 2);

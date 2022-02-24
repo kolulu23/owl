@@ -81,7 +81,7 @@ public class OwlDSLExecutor implements OwlExecutor {
                 result.setErrorList(new ArrayList<>(this.owlContext.listAllSemanticErrors()));
             }
         } else {
-            result.setErrorList(new ArrayList<>(this.owlContext.listAllSemanticErrors()));
+            result.setErrorList(new ArrayList<>(this.owlContext.listAllSyntaxErrors()));
         }
         resetState();
         return result;
@@ -148,5 +148,6 @@ public class OwlDSLExecutor implements OwlExecutor {
         this.owlContext = owlContext;
         this.owlVariableListener.setOwlContext(owlContext);
         this.owlEvalVisitor.setOwlContext(owlContext);
+        this.owlSyntaxErrorListener.setOwlContext(owlContext);
     }
 }
