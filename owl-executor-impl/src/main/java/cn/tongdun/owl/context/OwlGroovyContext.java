@@ -4,6 +4,9 @@ import cn.tongdun.owl.error.OwlSemanticError;
 import cn.tongdun.owl.error.OwlSyntaxError;
 import cn.tongdun.owl.parse.OwlSemanticErrorFactory;
 import cn.tongdun.owl.type.OwlVariable;
+import org.codehaus.groovy.control.ErrorCollector;
+import org.codehaus.groovy.control.MultipleCompilationErrorsException;
+import org.codehaus.groovy.syntax.SyntaxException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -76,6 +79,18 @@ public class OwlGroovyContext implements OwlContext {
         OwlSemanticError semanticError = OwlSemanticErrorFactory.semanticErrorOf(stackTraceElement);
         semanticError.setMessage(e.getLocalizedMessage());
         this.semanticErrorList.add(semanticError);
+    }
+
+    public void addSemanticErrorFromCompilationErrors(MultipleCompilationErrorsException compilationErrors) {
+        ErrorCollector errorCollector = compilationErrors.getErrorCollector();
+        for (int i = 0; i < errorCollector.getErrorCount(); i++) {
+            SyntaxException syntaxError = errorCollector.getSyntaxError(i);
+            OwlSemanticError semanticError = new OwlSemanticError();
+            semanticError.setLine(syntaxError.getLine());
+            semanticError.setCodeSegment(syntaxError.getSourceLocator());
+            semanticError.setMessage(syntaxError.getLocalizedMessage());
+            this.semanticErrorList.add(semanticError);
+        }
     }
 
     @Override

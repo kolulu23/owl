@@ -6,6 +6,7 @@ import cn.tongdun.owl.executor.OwlExecutionResult;
 import cn.tongdun.owl.executor.OwlExecutionUnit;
 import cn.tongdun.owl.executor.OwlGroovyExecutionResult;
 import cn.tongdun.owl.executor.OwlGroovyExecutor;
+import groovy.lang.GroovyObject;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -25,6 +26,8 @@ public class GroovyExecutorTest {
     private static final String TEST_INCORRECT_GROOVY_FILE = "src/test/java/cn/tongdun/owl/example/groovy/IncorrectGroovyDemo.groovy";
 
     private static final String TEST_CAST_GROOVY_OBJECT_FILE = "src/test/java/cn/tongdun/owl/example/groovy/ImplementsInterfaceGroovy.groovy";
+
+    private static final String TEST_INCORRECT_GROOVY_FILE_TXT = "src/test/java/cn/tongdun/owl/example/groovy/IncorrectGroovyDemo.txt";
 
     private static final String EXECUTE_RESULT = "res";
 
@@ -84,5 +87,64 @@ public class GroovyExecutorTest {
         GroovyInterface groovyInterface = (GroovyInterface) groovyExecutor.compile(owlExecutionUnit);
         Map<String, String> resMap = groovyInterface.run(inputParamMap);
         System.out.println("resMap="+resMap);
+    }
+
+    @Test
+    void testCastExternalInterfaceToGroovyObj() throws IOException {
+        // 构建上下文
+        OwlGroovyContext groovyContext = new OwlGroovyContext();
+        groovyContext.setInvokedMethodName("run");
+        Map<String, String> inputParamMap = new HashMap<>();
+        inputParamMap.put("param1", "A001");
+        groovyContext.setInputParam(inputParamMap);
+
+        // 加载执行器
+        OwlGroovyExecutor groovyExecutor = new OwlGroovyExecutor(groovyContext);
+        OwlExecutionUnit owlExecutionUnit = new OwlExecutionUnit();
+        owlExecutionUnit.setName("testCorrectExecute");
+        owlExecutionUnit.setSource(new FileInputStream(new File(TEST_CAST_GROOVY_OBJECT_FILE).getCanonicalPath()));
+
+        GroovyInterface groovyInterface = (GroovyInterface) groovyExecutor.compile(owlExecutionUnit);
+
+        GroovyObject groovyObject = (GroovyObject) groovyInterface;
+        Map<String, String> resMap = (Map<String, String>) groovyObject.invokeMethod("run", inputParamMap);
+        System.out.println("resMap="+resMap);
+    }
+
+    @Test
+    void testExecuteFromInstance() throws IOException {
+        // 构建上下文
+        OwlGroovyContext groovyContext = new OwlGroovyContext();
+        groovyContext.setInvokedMethodName("run");
+        Map<String, String> inputParamMap = new HashMap<>();
+        inputParamMap.put("param1", "A001");
+        groovyContext.setInputParam(inputParamMap);
+
+        // 加载执行器
+        OwlGroovyExecutor groovyExecutor = new OwlGroovyExecutor(groovyContext);
+        OwlExecutionUnit owlExecutionUnit = new OwlExecutionUnit();
+        owlExecutionUnit.setName("testExecuteFromInstance");
+        owlExecutionUnit.setSource(new FileInputStream(new File(TEST_INCORRECT_GROOVY_FILE).getCanonicalPath()));
+
+        OwlExecutionResult executionResult = groovyExecutor.executeFromInstance(groovyExecutor.compile(owlExecutionUnit));
+        System.out.println(executionResult);
+    }
+
+    @Test
+    void testCompileError() throws IOException {
+        // 构建上下文
+        OwlGroovyContext groovyContext = new OwlGroovyContext();
+        groovyContext.setInvokedMethodName("run");
+        Map<String, Object> inputParamMap = new HashMap<>();
+        inputParamMap.put("param1", "A001");
+        groovyContext.setInputParam(inputParamMap);
+
+        // 加载执行器
+        OwlGroovyExecutor groovyExecutor = new OwlGroovyExecutor(groovyContext);
+        OwlExecutionUnit owlExecutionUnit = new OwlExecutionUnit();
+        owlExecutionUnit.setName("testCorrectExecute");
+        owlExecutionUnit.setSource(new FileInputStream(new File(TEST_INCORRECT_GROOVY_FILE_TXT).getCanonicalPath()));
+        groovyExecutor.compile(owlExecutionUnit);
+        System.out.println("语义错误信息：" + groovyContext.listAllSemanticErrors());
     }
 }
