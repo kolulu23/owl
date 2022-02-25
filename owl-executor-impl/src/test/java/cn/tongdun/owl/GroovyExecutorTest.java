@@ -27,6 +27,8 @@ public class GroovyExecutorTest {
 
     private static final String TEST_CAST_GROOVY_OBJECT_FILE = "src/test/java/cn/tongdun/owl/example/groovy/ImplementsInterfaceGroovy.groovy";
 
+    private static final String TEST_INCORRECT_GROOVY_FILE_TXT = "src/test/java/cn/tongdun/owl/example/groovy/IncorrectGroovyDemo.txt";
+
     private static final String EXECUTE_RESULT = "res";
 
     @Test
@@ -126,5 +128,23 @@ public class GroovyExecutorTest {
 
         OwlExecutionResult executionResult = groovyExecutor.executeFromInstance(groovyExecutor.compile(owlExecutionUnit));
         System.out.println(executionResult);
+    }
+
+    @Test
+    void testCompileError() throws IOException {
+        // 构建上下文
+        OwlGroovyContext groovyContext = new OwlGroovyContext();
+        groovyContext.setInvokedMethodName("run");
+        Map<String, Object> inputParamMap = new HashMap<>();
+        inputParamMap.put("param1", "A001");
+        groovyContext.setInputParam(inputParamMap);
+
+        // 加载执行器
+        OwlGroovyExecutor groovyExecutor = new OwlGroovyExecutor(groovyContext);
+        OwlExecutionUnit owlExecutionUnit = new OwlExecutionUnit();
+        owlExecutionUnit.setName("testCorrectExecute");
+        owlExecutionUnit.setSource(new FileInputStream(new File(TEST_INCORRECT_GROOVY_FILE_TXT).getCanonicalPath()));
+        groovyExecutor.compile(owlExecutionUnit);
+        System.out.println("语义错误信息：" + groovyContext.listAllSemanticErrors());
     }
 }

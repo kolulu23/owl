@@ -3,6 +3,8 @@ package cn.tongdun.owl.executor;
 import cn.tongdun.owl.context.OwlGroovyContext;
 import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyObject;
+import org.apache.commons.collections4.CollectionUtils;
+import org.codehaus.groovy.control.MultipleCompilationErrorsException;
 import org.codehaus.groovy.runtime.IOGroovyMethods;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +38,14 @@ public class OwlGroovyExecutor implements OwlExecutor {
     @Override
     public OwlExecutionResult execute(OwlExecutionUnit executionUnit, Charset charset) {
         Object groovyInstance = this.compile(executionUnit, charset);
+        // 编译时出现错误
+        if (CollectionUtils.isNotEmpty(groovyContext.listAllSemanticErrors())) {
+            OwlGroovyExecutionResult groovyExecutionResult = new OwlGroovyExecutionResult();
+            groovyExecutionResult.setSuccess(false);
+            groovyExecutionResult.setErrorList(new ArrayList<>(groovyContext.listAllSemanticErrors()));
+
+            return groovyExecutionResult;
+        }
 
         return this.executeFromInstance(groovyInstance);
     }
@@ -83,6 +93,9 @@ public class OwlGroovyExecutor implements OwlExecutor {
         } catch (InstantiationException | IllegalAccessException e) {
             logger.error("无法为该class创建实例：", e);
             groovyContext.addSemanticErrorFromException(e);
+        } catch (MultipleCompilationErrorsException e) {
+            logger.error("Groovy脚本出现语法错误：", e);
+            groovyContext.addSemanticErrorFromCompilationErrors(e);
         } catch (Exception e) {
             logger.error("groovy脚本编译时出现异常：", e);
             groovyContext.addSemanticErrorFromException(e);
