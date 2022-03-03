@@ -6,13 +6,21 @@ import cn.tongdun.owl.executor.OwlExecutionResult;
 import cn.tongdun.owl.executor.OwlExecutionUnit;
 import cn.tongdun.owl.executor.OwlGroovyExecutionResult;
 import cn.tongdun.owl.executor.OwlGroovyExecutor;
+import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyObject;
+import org.codehaus.groovy.ast.stmt.Statement;
+import org.codehaus.groovy.ast.stmt.WhileStatement;
+import org.codehaus.groovy.control.CompilerConfiguration;
+import org.codehaus.groovy.control.customizers.SecureASTCustomizer;
+import org.codehaus.groovy.syntax.Types;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -88,6 +96,33 @@ public class GroovyExecutorTest {
         Map<String, String> resMap = groovyInterface.run(inputParamMap);
         System.out.println("resMap="+resMap);
     }
+
+    @Test
+    void testSecureASTCustomizer() throws IOException, InstantiationException, IllegalAccessException {
+        final SecureASTCustomizer secure = new SecureASTCustomizer();// 创建SecureASTCustomizer
+        secure.setClosuresAllowed(true);// 禁止使用闭包
+        List<Integer> tokensBlacklist = new ArrayList<>();
+        tokensBlacklist.add(Types.KEYWORD_WHILE);// 添加关键字黑名单 while和goto
+        tokensBlacklist.add(Types.KEYWORD_GOTO);
+        secure.setTokensBlacklist(tokensBlacklist);
+        secure.setIndirectImportCheckEnabled(true);// 设置直接导入检查
+        List<String> list = new ArrayList<>();// 添加导入黑名单，用户不能导入JSONObject
+        list.add("com.alibaba.fastjson.JSONObject");
+        secure.setImportsBlacklist(list);
+        List<Class<? extends Statement>> statementBlacklist = new ArrayList<>();// statement 黑名单，不能使用while循环块
+        statementBlacklist.add(WhileStatement.class);
+        secure.setStatementsBlacklist(statementBlacklist);
+        final CompilerConfiguration config = new CompilerConfiguration();// 自定义CompilerConfiguration，设置AST
+        config.addCompilationCustomizers(secure);
+        GroovyClassLoader groovyClassLoader = new GroovyClassLoader(this.getClass().getClassLoader(), config);
+        Class parseClass = groovyClassLoader.parseClass(new File(TEST_CORRECT_GROOVY_FILE));
+        GroovyObject groovyObject = (GroovyObject) parseClass.newInstance();
+        Map<String, String> inputParamMap = new HashMap<>();
+        inputParamMap.put("param1", "A001");
+        Object res = groovyObject.invokeMethod("run", inputParamMap);
+        System.out.println(res);
+    }
+
 
     @Test
     void testCastExternalInterfaceToGroovyObj() throws IOException {
