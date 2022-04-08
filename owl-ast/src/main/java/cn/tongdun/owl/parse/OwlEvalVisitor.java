@@ -364,10 +364,19 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
     public OwlVariable visitDef_Double(OwlParser.Def_DoubleContext ctx) {
         String id = ctx.ID().getText();
         OwlVariable variable = visit(ctx.expr());
-        boolean typeCheckOk = requiresType(ctx, id, variable, OwlType.DOUBLE);
+        // Bypass type check if the variable is an integer, in that case we need to do some type casting
+        boolean typeCheckOk = requiresNumberType(ctx, variable);
         if (typeCheckOk) {
-            variable.setId(id);
-            owlContext.addVariable(variable, false);
+            if (OwlType.DOUBLE.equals(variable.getType())) {
+                variable.setId(id);
+                owlContext.addVariable(variable, false);
+            } else {
+                OwlDoubleVariable doubleVariable = new OwlDoubleVariable();
+                Long intValue = ((OwlIntVariable) variable).getIntValue();
+                doubleVariable.setId(id);
+                doubleVariable.setValue(BigDecimal.valueOf(intValue));
+                owlContext.addVariable(doubleVariable, false);
+            }
         }
         return null;
     }
