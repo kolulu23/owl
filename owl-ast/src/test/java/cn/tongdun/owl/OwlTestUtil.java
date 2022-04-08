@@ -2,6 +2,7 @@ package cn.tongdun.owl;
 
 import cn.tongdun.owl.generated.OwlLexer;
 import cn.tongdun.owl.generated.OwlParser;
+import org.antlr.v4.runtime.ANTLRErrorListener;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 
@@ -15,6 +16,14 @@ import java.io.IOException;
 public class OwlTestUtil {
     public static OwlParser getParserFromString(String input) {
         OwlLexer lexer = new OwlLexer(CharStreams.fromString(input));
+        CommonTokenStream tokenStream = new CommonTokenStream(lexer);
+        return new OwlParser(tokenStream);
+    }
+
+    public static OwlParser getParserFromString(String input, ANTLRErrorListener lexerSyntaxErrorListener){
+        OwlLexer lexer = new OwlLexer(CharStreams.fromString(input));
+        lexer.removeErrorListeners();
+        lexer.addErrorListener(lexerSyntaxErrorListener);
         CommonTokenStream tokenStream = new CommonTokenStream(lexer);
         return new OwlParser(tokenStream);
     }

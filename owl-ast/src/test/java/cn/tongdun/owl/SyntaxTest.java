@@ -56,8 +56,21 @@ public class SyntaxTest {
 
     @Test
     public void testBasicInitError() {
-        OwlParser parser = getParserFromString(INIT_ERROR);
         OwlSyntaxErrorListener errorListener = new OwlSyntaxErrorListener();
+        errorListener.setOwlContext(new TestOwlContext());
+        OwlParser parser = getParserFromString(INIT_ERROR, errorListener);
+        parser.removeErrorListeners();
+        parser.addErrorListener(errorListener);
+        parser.prog();
+        System.out.println(errorListener.getOwlContext().listAllSyntaxErrors());
+    }
+
+    @Test
+    public void testLexicalError() {
+        OwlSyntaxErrorListener errorListener = new OwlSyntaxErrorListener();
+        errorListener.setOwlContext(new TestOwlContext());
+        OwlParser parser = getParserFromString(LEXICAL_ERROR_TOKEN, errorListener);
+        parser.removeErrorListeners();
         parser.addErrorListener(errorListener);
         parser.prog();
         System.out.println(errorListener.getOwlContext().listAllSyntaxErrors());

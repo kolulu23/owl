@@ -23,7 +23,7 @@ import java.util.ArrayList;
  */
 public class OwlGroovyExecutor implements OwlExecutor {
 
-    private Logger logger = LoggerFactory.getLogger(OwlGroovyExecutor.class);
+    private final Logger logger = LoggerFactory.getLogger(OwlGroovyExecutor.class);
 
     private OwlGroovyContext groovyContext;
 
@@ -85,7 +85,7 @@ public class OwlGroovyExecutor implements OwlExecutor {
         Object groovyInstance = null;
         try (GroovyClassLoader groovyClassLoader = new GroovyClassLoader()) {
             String groovyText = IOGroovyMethods.getText(new InputStreamReader(inputStream, charset));
-            Class groovyClass = groovyClassLoader.parseClass(groovyText);
+            Class<?> groovyClass = groovyClassLoader.parseClass(groovyText);
             groovyInstance = groovyClass.newInstance();
         } catch (IOException e) {
             logger.error("输入流操作异常：", e);

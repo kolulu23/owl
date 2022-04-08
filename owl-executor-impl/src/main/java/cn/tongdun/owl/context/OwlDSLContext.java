@@ -3,6 +3,7 @@ package cn.tongdun.owl.context;
 import cn.tongdun.owl.error.OwlSemanticError;
 import cn.tongdun.owl.error.OwlSyntaxError;
 import cn.tongdun.owl.type.OwlVariable;
+import org.antlr.v4.runtime.LexerNoViableAltException;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
@@ -31,7 +32,8 @@ public class OwlDSLContext implements OwlContext {
     private List<OwlSemanticError> semanticErrorList;
 
     /**
-     * Syntax errors leading to failed parsing.
+     * Syntax errors reported by {@link org.antlr.v4.runtime.Lexer#notifyListeners(LexerNoViableAltException)}
+     * and {@link org.antlr.v4.runtime.Parser#notifyErrorListeners(String)}
      */
     private List<OwlSyntaxError> syntaxErrorList;
 

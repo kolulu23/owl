@@ -4,6 +4,7 @@ import cn.tongdun.owl.context.OwlContext;
 import cn.tongdun.owl.error.OwlSemanticError;
 import cn.tongdun.owl.error.OwlSyntaxError;
 import cn.tongdun.owl.type.OwlVariable;
+import org.antlr.v4.runtime.LexerNoViableAltException;
 import org.junit.platform.commons.util.StringUtils;
 
 import java.util.*;
@@ -29,10 +30,17 @@ public class TestOwlContext implements OwlContext {
      */
     private List<OwlSemanticError> semanticErrorList;
 
+    /**
+     * Syntax errors reported by {@link org.antlr.v4.runtime.Lexer#notifyListeners(LexerNoViableAltException)}
+     * and {@link org.antlr.v4.runtime.Parser#notifyErrorListeners(String)}
+     */
+    private List<OwlSyntaxError> syntaxErrorList;
+
     public TestOwlContext() {
         this.setVariableMap(new HashMap<>());
         this.setGlobalVariableMap(new HashMap<>());
         this.setSemanticErrorList(new ArrayList<>());
+        this.setSyntaxErrorList(new ArrayList<>());
     }
 
     @Override
@@ -75,17 +83,24 @@ public class TestOwlContext implements OwlContext {
 
     @Override
     public void addSyntaxError(OwlSyntaxError owlSyntaxError) {
+        if (this.syntaxErrorList == null) {
+            this.setSyntaxErrorList(new ArrayList<>());
+        }
+        this.syntaxErrorList.add(owlSyntaxError);
 
     }
 
     @Override
     public Collection<OwlSyntaxError> listAllSyntaxErrors() {
-        return null;
+        return this.syntaxErrorList;
     }
 
     @Override
     public void reset() {
-
+        this.setVariableMap(new HashMap<>());
+        this.setGlobalVariableMap(new HashMap<>());
+        this.setSemanticErrorList(new ArrayList<>());
+        this.setSyntaxErrorList(new ArrayList<>());
     }
 
     public Map<String, OwlVariable> getVariableMap() {
@@ -110,5 +125,13 @@ public class TestOwlContext implements OwlContext {
 
     public void setSemanticErrorList(List<OwlSemanticError> semanticErrorList) {
         this.semanticErrorList = semanticErrorList;
+    }
+
+    public List<OwlSyntaxError> getSyntaxErrorList() {
+        return syntaxErrorList;
+    }
+
+    public void setSyntaxErrorList(List<OwlSyntaxError> syntaxErrorList) {
+        this.syntaxErrorList = syntaxErrorList;
     }
 }

@@ -93,6 +93,8 @@ public class OwlDSLExecutor implements OwlExecutor {
         OwlParser parser;
         try {
             OwlLexer lexer = new OwlLexer(CharStreams.fromStream(source, charset));
+            lexer.removeErrorListeners();
+            lexer.addErrorListener(this.owlSyntaxErrorListener);
             TokenStream tokenStream = new CommonTokenStream(lexer);
             parser = new OwlParser(tokenStream);
         } catch (Exception e) {
