@@ -11,7 +11,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.stat.descriptive.moment.Variance;
 
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -143,12 +142,12 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
     private boolean variableContains(OwlVariable src, OwlVariable target) {
         boolean srcNotNull = requiresNonNullVariable(src);
         boolean targetNotNull = requiresNonNullVariable(target);
-        boolean srcIsString = OwlType.STRING.equals(src.getType());
-        boolean srcIsList = OwlType.LIST.equals(src.getType());
-        boolean targetIsString = OwlType.STRING.equals(target.getType());
         if (srcNotNull) {
+            boolean srcIsString = OwlType.STRING.equals(src.getType());
+            boolean srcIsList = OwlType.LIST.equals(src.getType());
+            boolean targetIsString = targetNotNull && OwlType.STRING.equals(target.getType());
             // A string can not contain null
-            if (srcIsString && targetNotNull && targetIsString) {
+            if (srcIsString && targetIsString) {
                 String srcString = src.getInner().getStringValue();
                 String targetString = target.getInner().getStringValue();
                 return srcString.contains(targetString);
