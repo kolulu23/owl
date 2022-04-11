@@ -2,6 +2,7 @@ package cn.tongdun.owl;
 
 import cn.tongdun.owl.generated.OwlParser;
 import cn.tongdun.owl.parse.OwlEvalVisitor;
+import cn.tongdun.owl.parse.OwlSyntaxErrorListener;
 import cn.tongdun.owl.parse.OwlVariableListener;
 import cn.tongdun.owl.type.OwlVariable;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -56,6 +57,26 @@ public class EvalTest {
         walker.walk(listener, parseTree);
         OwlVariable variable = visitor.visit(parseTree);
         System.out.println(owlContext.getSemanticErrorList());
+        System.out.println(variable.getInner().getValue());
+    }
+
+    @Test
+    public void testNumericalCast(){
+        OwlSyntaxErrorListener errorListener = new OwlSyntaxErrorListener();
+        errorListener.setOwlContext(owlContext);
+        OwlEvalVisitor visitor = new OwlEvalVisitor(owlContext);
+        OwlVariableListener listener = new OwlVariableListener();
+        listener.setOwlContext(owlContext);
+        OwlParser parser = OwlTestUtil.getParserFromString(OwlTestResource.INT_CAST_DOUBLE, errorListener);
+        parser.removeErrorListeners();
+        parser.addErrorListener(errorListener);
+        ParseTree parseTree = parser.prog();
+        ParseTreeWalker walker = new ParseTreeWalker();
+        walker.walk(listener, parseTree);
+        OwlVariable variable = visitor.visit(parseTree);
+        System.out.println(owlContext.getSyntaxErrorList());
+        System.out.println(owlContext.getSemanticErrorList());
+        System.out.println(owlContext.getVariableMap());
         System.out.println(variable.getInner().getValue());
     }
 }

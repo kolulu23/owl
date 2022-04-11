@@ -27,13 +27,19 @@ public class OwlTestResource {
             "list arr = [a,b,c,d];\n" +
             "a = 66666;\n";
     public static final String ARITHMETIC_3_DIV_ZERO = "return 3.01 / 0;";
+
     public static final String ARITHMETIC_4_COMPARE = "string m=\"mysql\";" +
             "list a = [m]; " +
             "list b = [\"oracle\"];" +
             "return a != b;";
+
     public static final String ARITHMETIC_5_LOGIC= "return true or false;";
+
     public static final String FUN_1 = ARITHMETIC +
             "double copied = c;" +
             "list d = [933,933,a,66666,copied,c];" +
             "return #toString(#dedup(d));";
+
+    public static final String INT_CAST_DOUBLE = "double a = 666;" +
+            "return a + 77;";
 }
