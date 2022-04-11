@@ -182,4 +182,22 @@ public class GroovyExecutorTest {
         groovyExecutor.compile(owlExecutionUnit);
         System.out.println("语义错误信息：" + groovyContext.listAllSemanticErrors());
     }
+
+    @Test
+    void testBug1() throws IOException {
+        // 构建上下文
+        OwlGroovyContext groovyContext = new OwlGroovyContext();
+        groovyContext.setInvokedMethodName("run");
+        Map<String, Object> inputParamMap = new HashMap<>();
+        inputParamMap.put("param1", "A001");
+        groovyContext.setInputParam(inputParamMap);
+
+        // 加载执行器
+        OwlGroovyExecutor groovyExecutor = new OwlGroovyExecutor(groovyContext);
+        OwlExecutionUnit owlExecutionUnit = new OwlExecutionUnit();
+        owlExecutionUnit.setName("testCorrectExecute");
+        owlExecutionUnit.setSource(new FileInputStream(new File("src/test/java/cn/tongdun/owl/example/groovy/TestBug1.txt").getCanonicalPath()));
+        groovyExecutor.execute(owlExecutionUnit);
+        System.out.println("语义错误信息：" + groovyContext.listAllSemanticErrors());
+    }
 }

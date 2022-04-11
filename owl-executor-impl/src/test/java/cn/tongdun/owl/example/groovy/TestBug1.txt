@@ -1,0 +1,17 @@
+package cn.tongdun.owl.example.groovy
+
+import groovy.transform.CompileStatic
+
+/**
+ * @author ao.li
+ * @date 2022/4/11 4:21 下午
+ */
+@CompileStatic
+class TestBug1 {
+    Object run(Map < String, Object > inputParamMap) {
+        // TODO 请在此处补充需要实现的业务逻辑
+        Integer i = "1"
+
+        return i.toString()
+    }
+}

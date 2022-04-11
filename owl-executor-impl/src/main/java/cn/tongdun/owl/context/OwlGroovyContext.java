@@ -83,8 +83,14 @@ public class OwlGroovyContext implements OwlContext {
 
     public void addSemanticErrorFromCompilationErrors(MultipleCompilationErrorsException compilationErrors) {
         ErrorCollector errorCollector = compilationErrors.getErrorCollector();
+        if (errorCollector == null) {
+            return;
+        }
         for (int i = 0; i < errorCollector.getErrorCount(); i++) {
             SyntaxException syntaxError = errorCollector.getSyntaxError(i);
+            if (syntaxError == null) {
+                continue;
+            }
             OwlSemanticError semanticError = new OwlSemanticError();
             semanticError.setLine(syntaxError.getLine());
             semanticError.setCodeSegment(syntaxError.getSourceLocator());
