@@ -198,7 +198,7 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
     private Pair<OwlVariable, Integer> getMaxVariableFrom(Iterable<OwlVariable> variables) {
         // We can not compare int and double directly, so we need unify types first.
         OwlDoubleVariable maximum = new OwlDoubleVariable(BigDecimal.valueOf(Double.MIN_VALUE));
-        int nonOperableExprCount = 0;
+        int nonOperableCount = 0;
         for (OwlVariable variable : variables) {
             if (variable != null) {
                 BigDecimal comparedValue;
@@ -209,18 +209,18 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
                     comparedValue = variable.getInner().getDoubleValue();
                     maximum.setValue(maximum.getDoubleValue().max(comparedValue));
                 } else {
-                    nonOperableExprCount += 1;
+                    nonOperableCount += 1;
                 }
             } else {
-                nonOperableExprCount += 1;
+                nonOperableCount += 1;
             }
         }
-        return ImmutablePair.of(maximum, nonOperableExprCount);
+        return ImmutablePair.of(maximum, nonOperableCount);
     }
 
     private Pair<OwlVariable, Integer> getMinVariableFrom(Iterable<OwlVariable> variables) {
-        OwlDoubleVariable minimum = new OwlDoubleVariable(BigDecimal.valueOf(Double.MIN_VALUE));
-        int nonOperableExprCount = 0;
+        OwlDoubleVariable minimum = new OwlDoubleVariable(BigDecimal.valueOf(Double.MAX_VALUE));
+        int nonOperableCount = 0;
         for (OwlVariable variable : variables) {
             if (variable != null) {
                 BigDecimal comparedValue;
@@ -231,13 +231,32 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
                     comparedValue = variable.getInner().getDoubleValue();
                     minimum.setValue(minimum.getDoubleValue().min(comparedValue));
                 } else {
-                    nonOperableExprCount += 1;
+                    nonOperableCount += 1;
                 }
             } else {
-                nonOperableExprCount += 1;
+                nonOperableCount += 1;
             }
         }
-        return ImmutablePair.of(minimum, nonOperableExprCount);
+        return ImmutablePair.of(minimum, nonOperableCount);
+    }
+
+    private Pair<BigDecimal, Long> getSumFromVariables(Iterable<OwlVariable> variables) {
+        BigDecimal sum = BigDecimal.ZERO;
+        long nonOperableCount = 0;
+        for (OwlVariable variable : variables) {
+            if (variable != null && variable.getInner().getValue() != null) {
+                if (OwlType.INT.equals(variable.getType())) {
+                    sum = sum.add(new BigDecimal(variable.getInner().getIntValue()));
+                } else if (OwlType.DOUBLE.equals(variable.getType())) {
+                    sum = sum.add(variable.getInner().getDoubleValue());
+                } else {
+                    nonOperableCount++;
+                }
+            } else {
+                nonOperableCount++;
+            }
+        }
+        return ImmutablePair.of(sum, nonOperableCount);
     }
 
     //********************** Program Execution and Evaluation **************
@@ -975,29 +994,32 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
 
     @Override
     public OwlVariable visitFn_Avg(OwlParser.Fn_AvgContext ctx) {
-        OwlVariable variable = visit(ctx.expr());
-        boolean isListType = requiresType(ctx, ctx.expr().getText(), variable, OwlType.LIST);
-        OwlDoubleVariable result = new OwlDoubleVariable();
-        if (isListType) {
-            List<? extends OwlVariable> list = variable.getInner().getListValue();
-            if (list == null) {
-                return null;
-            }
-            BigDecimal sum = BigDecimal.ZERO;
-            BigDecimal size = new BigDecimal(list.size());
-            for (OwlVariable owlVariable : list) {
-                if (owlVariable != null && owlVariable.getInner().getValue() != null) {
-                    if (OwlType.INT.equals(owlVariable.getType())) {
-                        sum = sum.add(new BigDecimal(owlVariable.getInner().getIntValue()));
-                    } else if (OwlType.DOUBLE.equals(owlVariable.getType())) {
-                        sum = sum.add(owlVariable.getInner().getDoubleValue());
-                    }
+        Pair<BigDecimal, Long> result = null;
+        List<OwlParser.ExprContext> args = ctx.expr();
+        int totalItems = args.size();
+        if (args.size() == 1) {
+            OwlParser.ExprContext context = args.get(0);
+            OwlVariable variable = visit(context);
+            if (requiresKnownType(context, variable)) {
+                if (OwlType.LIST.equals(variable.getType())) {
+                    List<OwlVariable> variables = variable.getInner().getListValue();
+                    totalItems = variables.size();
+                    result = getSumFromVariables(variables);
+                } else {
+                    result = getSumFromVariables(Collections.singletonList(variable));
                 }
             }
-            result.setValue(sum.divide(size, this.defaultScale, RoundingMode.HALF_UP));
-            return result;
+        } else {
+            result = getSumFromVariables(getVariablesFromExpressions(args));
         }
-        return null;
+        if (result == null || result.getRight() == null || result.getRight() >= totalItems) {
+            owlContext.addSemanticError(OwlSemanticErrorFactory.noOperableArgForFunc(ctx, ctx.FN_AVG().getText()));
+            return null;
+        } else {
+            BigDecimal size = BigDecimal.valueOf(totalItems - result.getRight());
+            BigDecimal avgValue = result.getLeft().divide(size, this.defaultScale, RoundingMode.HALF_UP);
+            return new OwlDoubleVariable(avgValue);
+        }
     }
 
     @Override
@@ -1018,7 +1040,7 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
         } else {
             result = getMaxVariableFrom(getVariablesFromExpressions(args));
         }
-        if (result == null || result.getRight() == null || result.getRight() == args.size()) {
+        if (result == null || result.getRight() == null || result.getRight() >= args.size()) {
             owlContext.addSemanticError(OwlSemanticErrorFactory.noOperableArgForFunc(ctx, ctx.FN_MAX().getText()));
             return null;
         } else {
@@ -1043,7 +1065,7 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
         } else {
             result = getMinVariableFrom(getVariablesFromExpressions(args));
         }
-        if (result == null || result.getRight() == null || result.getRight() == args.size()) {
+        if (result == null || result.getRight() == null || result.getRight() >= args.size()) {
             owlContext.addSemanticError(OwlSemanticErrorFactory.noOperableArgForFunc(ctx, ctx.FN_MIN().getText()));
             return null;
         } else {

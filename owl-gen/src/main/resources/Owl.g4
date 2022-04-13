@@ -46,7 +46,7 @@ expr        : expr op=(MUL|DIV) expr                            # MulDiv
             | FN_ABS LP expr RP                                 # Fn_Abs
             | FN_CEIL LP expr RP                                # Fn_Ceil
             | FN_FLOOR LP expr RP                               # Fn_Floor
-            | FN_AVG LP expr RP                                 # Fn_Avg
+            | FN_AVG LP expr (',' expr)*? RP                    # Fn_Avg
             | FN_MAX LP expr (',' expr)*? RP                    # Fn_Max
             | FN_MIN LP expr (',' expr)*? RP                    # Fn_Min
             | FN_SUM LP expr (',' expr)*? RP                    # Fn_Sum

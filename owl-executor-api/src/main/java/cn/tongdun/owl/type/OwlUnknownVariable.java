@@ -1,6 +1,5 @@
 package cn.tongdun.owl.type;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -11,7 +10,7 @@ import java.util.List;
  * @author liutianlu
  * <br/>Created 2022/2/10 6:27 PM
  */
-public class OwlUnknownVariable<T> extends OwlVariable implements Serializable {
+public class OwlUnknownVariable<T> extends OwlVariable {
 
     private static final long serialVersionUID = 261171854254277961L;
 

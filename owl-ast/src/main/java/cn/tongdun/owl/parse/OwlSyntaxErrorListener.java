@@ -6,9 +6,6 @@ import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * @author liutianlu
  * <br/>Created 2022/2/10 2:53 PM
@@ -16,6 +13,10 @@ import java.util.List;
 public class OwlSyntaxErrorListener extends BaseErrorListener {
 
     private OwlContext owlContext;
+
+    public OwlSyntaxErrorListener(OwlContext owlContext) {
+        this.owlContext = owlContext;
+    }
 
     @Override
     public void syntaxError(Recognizer<?, ?> recognizer,

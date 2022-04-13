@@ -37,14 +37,14 @@ public class OwlDSLExecutor implements OwlExecutor {
 
     public OwlDSLExecutor() {
         owlContext = new OwlDSLContext();
-        this.owlSyntaxErrorListener = new OwlSyntaxErrorListener();
+        this.owlSyntaxErrorListener = new OwlSyntaxErrorListener(owlContext);
         this.owlVariableListener = new OwlVariableListener(owlContext);
         this.owlEvalVisitor = new OwlEvalVisitor(owlContext);
     }
 
     public OwlDSLExecutor(OwlContext owlContext) {
         this.owlContext = owlContext;
-        this.owlSyntaxErrorListener = new OwlSyntaxErrorListener();
+        this.owlSyntaxErrorListener = new OwlSyntaxErrorListener(this.owlContext);
         this.owlVariableListener = new OwlVariableListener(this.owlContext);
         this.owlEvalVisitor = new OwlEvalVisitor(this.owlContext);
     }

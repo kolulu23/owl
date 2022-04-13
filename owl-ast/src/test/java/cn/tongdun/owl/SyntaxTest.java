@@ -4,10 +4,8 @@ import cn.tongdun.owl.generated.OwlParser;
 import cn.tongdun.owl.parse.OwlSyntaxErrorListener;
 import cn.tongdun.owl.parse.OwlVariableListener;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 
 import static cn.tongdun.owl.OwlTestResource.*;
 import static cn.tongdun.owl.OwlTestUtil.getParserFromFile;
@@ -17,17 +15,23 @@ import static cn.tongdun.owl.OwlTestUtil.getParserFromString;
  * @author liutianlu
  * <br/>Created 2022/2/10 2:45 PM
  */
-public class SyntaxTest {
+class SyntaxTest {
 
+    private static TestOwlContext owlContext;
+
+    private static OwlSyntaxErrorListener syntaxErrorListener;
+
+    private static OwlVariableListener variableListener;
+
+    @BeforeEach
+    void initContext() {
+        owlContext = new TestOwlContext();
+        syntaxErrorListener = new OwlSyntaxErrorListener(owlContext);
+        variableListener = new OwlVariableListener(owlContext);
+    }
 
     @Test
-    public void testBasicInit() {
-        TestOwlContext owlContext = new TestOwlContext();
-        owlContext.setVariableMap(new HashMap<>());
-        owlContext.setGlobalVariableMap(new HashMap<>());
-        owlContext.setSemanticErrorList(new ArrayList<>());
-        OwlVariableListener variableListener = new OwlVariableListener();
-        variableListener.setOwlContext(owlContext);
+    void testBasicInit() {
         OwlParser parser = getParserFromString(INIT);
         OwlParser.ProgContext parseTree = parser.prog();
         ParseTreeWalker walker = new ParseTreeWalker();
@@ -38,13 +42,7 @@ public class SyntaxTest {
     }
 
     @Test
-    public void testIfElse() {
-        OwlVariableListener variableListener = new OwlVariableListener();
-        TestOwlContext owlContext = new TestOwlContext();
-        owlContext.setVariableMap(new HashMap<>());
-        owlContext.setGlobalVariableMap(new HashMap<>());
-        owlContext.setSemanticErrorList(new ArrayList<>());
-        variableListener.setOwlContext(owlContext);
+    void testIfElse() {
         OwlParser parser = getParserFromFile(PATH_TO_IFELSE);
         OwlParser.ProgContext parseTree = parser.prog();
         ParseTreeWalker walker = new ParseTreeWalker();
@@ -55,24 +53,20 @@ public class SyntaxTest {
     }
 
     @Test
-    public void testBasicInitError() {
-        OwlSyntaxErrorListener errorListener = new OwlSyntaxErrorListener();
-        errorListener.setOwlContext(new TestOwlContext());
-        OwlParser parser = getParserFromString(INIT_ERROR, errorListener);
+    void testBasicInitError() {
+        OwlParser parser = getParserFromString(INIT_ERROR, syntaxErrorListener);
         parser.removeErrorListeners();
-        parser.addErrorListener(errorListener);
+        parser.addErrorListener(syntaxErrorListener);
         parser.prog();
-        System.out.println(errorListener.getOwlContext().listAllSyntaxErrors());
+        System.out.println(syntaxErrorListener.getOwlContext().listAllSyntaxErrors());
     }
 
     @Test
-    public void testLexicalError() {
-        OwlSyntaxErrorListener errorListener = new OwlSyntaxErrorListener();
-        errorListener.setOwlContext(new TestOwlContext());
-        OwlParser parser = getParserFromString(LEXICAL_ERROR_TOKEN, errorListener);
+    void testLexicalError() {
+        OwlParser parser = getParserFromString(LEXICAL_ERROR_TOKEN, syntaxErrorListener);
         parser.removeErrorListeners();
-        parser.addErrorListener(errorListener);
+        parser.addErrorListener(syntaxErrorListener);
         parser.prog();
-        System.out.println(errorListener.getOwlContext().listAllSyntaxErrors());
+        System.out.println(syntaxErrorListener.getOwlContext().listAllSyntaxErrors());
     }
 }

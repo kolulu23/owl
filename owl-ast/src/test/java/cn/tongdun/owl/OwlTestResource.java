@@ -42,4 +42,25 @@ public class OwlTestResource {
 
     public static final String INT_CAST_DOUBLE = "double a = 666;" +
             "return a + 77;";
+
+    public static final String AVG_FUNC = "list arr = [2,5,7.8,99];" +
+            "double avgOverList = #avg(arr);" +
+            "double avgOverExpr = #avg(2,5,7.8,99);" +
+            "double avgOverExprNonOperable = #avg(2,true,5,99,7.8,\"Hi there\");" +
+            "list result = [avgOverList,avgOverExpr,avgOverExprNonOperable];" +
+            "return result;";
+
+    public static final String MAX_FUNC = "list arr = [2,5,7.8,99];" +
+            "double maxOverList = #max(arr);" +
+            "double maxOverExpr = #max(2,5,7.8,99);" +
+            "double maxOverExprNonOperable = #max(2,true,5,99,7.8,\"Hi there\");" +
+            "list result = [maxOverList,maxOverExpr,maxOverExprNonOperable];" +
+            "return result;";
+
+    public static final String MIN_FUNC = "list arr = [2,5,7.8,99];" +
+            "double minOverList = #min(arr);" +
+            "double minOverExpr = #min(2,5,7.8,99);" +
+            "double minOverExprNonOperable = #min(2,true,5,99,7.8,\"Hi there\");" +
+            "list result = [minOverList,minOverExpr,minOverExprNonOperable];" +
+            "return result;";
 }
