@@ -8,16 +8,16 @@ import cn.tongdun.owl.type.*;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.math3.stat.descriptive.moment.Variance;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import static cn.tongdun.owl.parse.OwlSemanticErrorEnum.GLOBAL_VAR_NOT_INIT;
 import static cn.tongdun.owl.parse.OwlSemanticErrorEnum.VARIABLE_NOT_DEFINED;
@@ -26,6 +26,7 @@ import static cn.tongdun.owl.parse.OwlSemanticErrorEnum.VARIABLE_NOT_DEFINED;
  * @author liutianlu
  * <br/>Created 2022/2/10 7:02 PM
  */
+@SuppressWarnings("unused")
 public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
     /**
      * DSL context
@@ -86,9 +87,13 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
     }
 
     private boolean requiresKnownType(ParserRuleContext context, OwlVariable variable) {
+        return requiresKnownType(context, variable, OwlSemanticErrorEnum.VARIABLE_TYPE_UNKNOWN.getErrorMsg());
+    }
+
+    private boolean requiresKnownType(ParserRuleContext context, OwlVariable variable, String customMsg) {
         if (variable == null || OwlType.UNKNOWN.equals(variable.getType())) {
             OwlSemanticError semanticError = OwlSemanticErrorFactory.semanticErrorOf(context);
-            semanticError.setMessage(OwlSemanticErrorEnum.VARIABLE_TYPE_UNKNOWN.getErrorMsg());
+            semanticError.setMessage(customMsg);
             owlContext.addSemanticError(semanticError);
             return false;
         }
@@ -119,14 +124,35 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
         return variable != null && variable.getInner().getValue() != null;
     }
 
-    private boolean requiresSameType(OwlVariable var1, OwlVariable var2) {
-        boolean var1isKnown = var1 != null && !OwlType.UNKNOWN.equals(var1.getType());
-        boolean var2isKnown = var2 != null && !OwlType.UNKNOWN.equals(var2.getType());
-        if (var1isKnown && var2isKnown) {
-            return var1.getType().equals(var2.getType());
-        } else {
-            return false;
+    private OwlIntVariable addSubIntVar(OwlVariable left, OwlVariable right, OwlParser.AddSubContext ctx) {
+        OwlIntVariable result = new OwlIntVariable();
+        Long leftValue = left.getInner().getIntValue();
+        Long rightValue = right.getInner().getIntValue();
+        // Yes, 'null + <any> = null'
+        if (leftValue == null || rightValue == null) {
+            return null;
         }
+        if (ctx.op.getType() == OwlParser.ADD) {
+            result.setValue(leftValue + rightValue);
+        } else {
+            result.setValue(leftValue - rightValue);
+        }
+        return result;
+    }
+
+    private OwlDoubleVariable addSubDoubleVar(OwlVariable left, OwlVariable right, OwlParser.AddSubContext ctx) {
+        OwlDoubleVariable result = new OwlDoubleVariable();
+        BigDecimal leftValue = left.getInner().getDoubleValue();
+        BigDecimal rightValue = right.getInner().getDoubleValue();
+        if (leftValue == null || rightValue == null) {
+            return null;
+        }
+        if (ctx.op.getType() == OwlParser.ADD) {
+            result.setValue(leftValue.add(rightValue));
+        } else {
+            result.setValue(leftValue.subtract(rightValue));
+        }
+        return result;
     }
 
     /**
@@ -156,6 +182,62 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
             }
         }
         return false;
+    }
+
+    private Iterable<OwlVariable> getVariablesFromExpressions(Iterable<OwlParser.ExprContext> contexts) {
+        return StreamSupport.stream(contexts.spliterator(), false).map(this::visit).collect(Collectors.toList());
+    }
+
+    /**
+     * Get the maximum from context list. These contexts are expected to produce numeric variables.
+     *
+     * @param variables variables that has already been evaluated
+     * @return A pair of result in which left is the maximum and right is the number of non-operable variables. A
+     * variable is considered as non-operable when: 1) It is null. 2) It is unknown. 3) It is not numeric.
+     */
+    private Pair<OwlVariable, Integer> getMaxVariableFrom(Iterable<OwlVariable> variables) {
+        // We can not compare int and double directly, so we need unify types first.
+        OwlDoubleVariable maximum = new OwlDoubleVariable(BigDecimal.valueOf(Double.MIN_VALUE));
+        int nonOperableExprCount = 0;
+        for (OwlVariable variable : variables) {
+            if (variable != null) {
+                BigDecimal comparedValue;
+                if (OwlType.INT.equals(variable.getType())) {
+                    comparedValue = new BigDecimal(variable.getInner().getIntValue());
+                    maximum.setValue(maximum.getDoubleValue().max(comparedValue));
+                } else if (OwlType.DOUBLE.equals(variable.getType())) {
+                    comparedValue = variable.getInner().getDoubleValue();
+                    maximum.setValue(maximum.getDoubleValue().max(comparedValue));
+                } else {
+                    nonOperableExprCount += 1;
+                }
+            } else {
+                nonOperableExprCount += 1;
+            }
+        }
+        return ImmutablePair.of(maximum, nonOperableExprCount);
+    }
+
+    private Pair<OwlVariable, Integer> getMinVariableFrom(Iterable<OwlVariable> variables) {
+        OwlDoubleVariable minimum = new OwlDoubleVariable(BigDecimal.valueOf(Double.MIN_VALUE));
+        int nonOperableExprCount = 0;
+        for (OwlVariable variable : variables) {
+            if (variable != null) {
+                BigDecimal comparedValue;
+                if (OwlType.INT.equals(variable.getType())) {
+                    comparedValue = new BigDecimal(variable.getInner().getIntValue());
+                    minimum.setValue(minimum.getDoubleValue().min(comparedValue));
+                } else if (OwlType.DOUBLE.equals(variable.getType())) {
+                    comparedValue = variable.getInner().getDoubleValue();
+                    minimum.setValue(minimum.getDoubleValue().min(comparedValue));
+                } else {
+                    nonOperableExprCount += 1;
+                }
+            } else {
+                nonOperableExprCount += 1;
+            }
+        }
+        return ImmutablePair.of(minimum, nonOperableExprCount);
     }
 
     //********************** Program Execution and Evaluation **************
@@ -332,18 +414,14 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
         String id = ctx.ID().getText();
         OwlVariable assigneeVar = owlContext.getVariable(id);
         OwlVariable assignerVar = visit(ctx.expr());
-        if (assigneeVar == null || assigneeVar.getType() == OwlType.UNKNOWN) {
-            OwlSemanticError semanticError = OwlSemanticErrorFactory.semanticErrorOf(ctx);
-            String msg = String.format(OwlSemanticErrorEnum.ASSIGN_TO_UNKNOWN_VARIABLE.getErrorMsg(), id);
-            semanticError.setMessage(msg);
-            owlContext.addSemanticError(semanticError);
-            return null;
-        }
-        boolean typeCheckOk = requiresType(ctx, id, assignerVar, assigneeVar.getType());
-        assignerVar.setId(assigneeVar.getId());
-        if (typeCheckOk) {
+        String msg = String.format(OwlSemanticErrorEnum.ASSIGN_TO_UNKNOWN_VARIABLE.getErrorMsg(), id);
+        boolean assigneeIsOk = requiresKnownType(ctx, assigneeVar, msg);
+        if (assigneeIsOk && requiresType(ctx, id, assignerVar, assigneeVar.getType())) {
+            // So the assigner takes assignee's id and becomes the variable we want to use
+            assignerVar.setId(assigneeVar.getId());
             owlContext.addVariable(assignerVar, false);
         }
+        // If assigner or assignee is not ok to proceed, there will be at least one semantic error in execution context
         return null;
     }
 
@@ -454,34 +532,9 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
             return null;
         }
         if (OwlType.INT.equals(leftVar.getType()) && OwlType.INT.equals(rightVar.getType())) {
-            OwlIntVariable result = new OwlIntVariable();
-            Long leftValue = leftVar.getInner().getIntValue();
-            Long rightValue = rightVar.getInner().getIntValue();
-            // Yes, 'null + <any> = null'
-            if (leftValue == null || rightValue == null) {
-                return null;
-            }
-            if (ctx.op.getType() == OwlParser.ADD) {
-                result.setValue(leftValue + rightValue);
-            } else {
-                result.setValue(leftValue - rightValue);
-            }
-            return result;
+            return addSubIntVar(leftVar, rightVar, ctx);
         } else {
-            OwlDoubleVariable result = new OwlDoubleVariable();
-            Object leftValue = leftVar.getInner().getValue();
-            Object rightValue = rightVar.getInner().getValue();
-            if (leftValue == null || rightValue == null) {
-                return null;
-            }
-            BigDecimal leftDecimal = new BigDecimal(leftValue.toString());
-            BigDecimal rightDecimal = new BigDecimal(rightValue.toString());
-            if (ctx.op.getType() == OwlParser.ADD) {
-                result.setValue(leftDecimal.add(rightDecimal));
-            } else {
-                result.setValue(leftDecimal.subtract(rightDecimal));
-            }
-            return result;
+            return addSubDoubleVar(leftVar, rightVar, ctx);
         }
     }
 
@@ -500,22 +553,14 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
         OwlVariable rightVar = visit(ctx.expr(1));
         OwlBoolVariable result = new OwlBoolVariable(false);
         if (OwlParser.EQ == type) {
-            boolean sameType = requiresSameType(leftVar, rightVar);
-            if (sameType) {
-                result.setValue(leftVar.getInner().equals(rightVar.getInner()));
-            }
+            result.setValue(leftVar.getInner().equals(rightVar.getInner()));
         } else if (OwlParser.NEQ == type) {
-            boolean sameType = requiresSameType(leftVar, rightVar);
-            if (sameType) {
-                result.setValue(!leftVar.getInner().equals(rightVar.getInner()));
-            } else {
-                result.setValue(true);
-            }
+            result.setValue(!leftVar.getInner().equals(rightVar.getInner()));
         } else {
             boolean isNumberVar = requiresNumberType(ctx, leftVar) && requiresNumberType(ctx, rightVar);
             if (isNumberVar) {
-                BigDecimal leftValue = new BigDecimal(leftVar.getInner().getValue().toString());
-                BigDecimal rightValue = new BigDecimal(rightVar.getInner().getValue().toString());
+                BigDecimal leftValue = leftVar.getInner().getDoubleValue();
+                BigDecimal rightValue = rightVar.getInner().getDoubleValue();
                 int compareResult = leftValue.compareTo(rightValue);
                 if (OwlParser.LT == type) {
                     result.setValue(compareResult < 0);
@@ -794,7 +839,6 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
             return null;
         }
         String src = variable.getInner().getStringValue();
-        // TODO Support optional args in Owl's grammar
         int start = ctx.start == null ? 0 : Integer.parseInt(ctx.start.getText());
         int end = ctx.end == null ? src.length() : Integer.parseInt(ctx.end.getText());
         if (start < 0) {
@@ -872,11 +916,11 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
             // Literal null
             result.setValue(NULL_LITERAL);
         } else if (OwlType.LIST.equals(variable.getType())) {
-            List<String> items = variable.getInner().getListValue().stream().map(var -> {
-                if (var == null || var.getInner().getValue() == null) {
+            List<String> items = variable.getInner().getListValue().stream().map(item -> {
+                if (item == null || item.getInner().getValue() == null) {
                     return NULL_LITERAL;
                 } else {
-                    return var.getInner().getValue().toString();
+                    return item.getInner().getValue().toString();
                 }
             }).collect(Collectors.toList());
             result.setValue("[" + StringUtils.join(items, ',') + "]");
@@ -958,60 +1002,52 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
 
     @Override
     public OwlVariable visitFn_Max(OwlParser.Fn_MaxContext ctx) {
-        // We can not compare int and double directly, so we need unify types first.
-        OwlDoubleVariable maximum = new OwlDoubleVariable(new BigDecimal(Double.MIN_VALUE));
-        int nonOperableExprCount = 0;
-        for (OwlParser.ExprContext exprContext : ctx.expr()) {
-            OwlVariable variable = visit(exprContext);
-            if (variable != null) {
-                BigDecimal comparedValue;
-                if (OwlType.INT.equals(variable.getType())) {
-                    comparedValue = new BigDecimal(variable.getInner().getIntValue());
-                    maximum.setValue(maximum.getDoubleValue().max(comparedValue));
-                } else if (OwlType.DOUBLE.equals(variable.getType())) {
-                    comparedValue = variable.getInner().getDoubleValue();
-                    maximum.setValue(maximum.getDoubleValue().max(comparedValue));
+        Pair<OwlVariable, Integer> result = null;
+        List<OwlParser.ExprContext> args = ctx.expr();
+        // When there's only one argument sent, we check if it is a list
+        if (args.size() == 1) {
+            OwlParser.ExprContext context = args.get(0);
+            OwlVariable variable = visit(context);
+            if (requiresKnownType(context, variable)) {
+                if (OwlType.LIST.equals(variable.getType())) {
+                    result = getMaxVariableFrom(variable.getInner().getListValue());
                 } else {
-                    nonOperableExprCount += 1;
+                    result = getMaxVariableFrom(Collections.singletonList(variable));
                 }
-            } else {
-                nonOperableExprCount += 1;
             }
+        } else {
+            result = getMaxVariableFrom(getVariablesFromExpressions(args));
         }
-        if (nonOperableExprCount == ctx.expr().size()) {
+        if (result == null || result.getRight() == null || result.getRight() == args.size()) {
             owlContext.addSemanticError(OwlSemanticErrorFactory.noOperableArgForFunc(ctx, ctx.FN_MAX().getText()));
             return null;
         } else {
-            return maximum;
+            return result.getLeft();
         }
     }
 
     @Override
     public OwlVariable visitFn_Min(OwlParser.Fn_MinContext ctx) {
-        OwlDoubleVariable minimum = new OwlDoubleVariable(new BigDecimal(Double.MAX_VALUE));
-        int nonOperableExprCount = 0;
-        for (OwlParser.ExprContext exprContext : ctx.expr()) {
-            OwlVariable variable = visit(exprContext);
-            if (variable != null) {
-                BigDecimal comparedValue;
-                if (OwlType.INT.equals(variable.getType())) {
-                    comparedValue = new BigDecimal(variable.getInner().getIntValue());
-                    minimum.setValue(minimum.getDoubleValue().min(comparedValue));
-                } else if (OwlType.DOUBLE.equals(variable.getType())) {
-                    comparedValue = variable.getInner().getDoubleValue();
-                    minimum.setValue(minimum.getDoubleValue().min(comparedValue));
+        Pair<OwlVariable, Integer> result = null;
+        List<OwlParser.ExprContext> args = ctx.expr();
+        if (args.size() == 1) {
+            OwlParser.ExprContext context = args.get(0);
+            OwlVariable variable = visit(context);
+            if (requiresKnownType(context, variable)) {
+                if (OwlType.LIST.equals(variable.getType())) {
+                    result = getMinVariableFrom(variable.getInner().getListValue());
                 } else {
-                    nonOperableExprCount += 1;
+                    result = getMinVariableFrom(Collections.singletonList(variable));
                 }
-            } else {
-                nonOperableExprCount += 1;
             }
+        } else {
+            result = getMinVariableFrom(getVariablesFromExpressions(args));
         }
-        if (nonOperableExprCount == ctx.expr().size()) {
+        if (result == null || result.getRight() == null || result.getRight() == args.size()) {
             owlContext.addSemanticError(OwlSemanticErrorFactory.noOperableArgForFunc(ctx, ctx.FN_MIN().getText()));
             return null;
         } else {
-            return minimum;
+            return result.getLeft();
         }
     }
 

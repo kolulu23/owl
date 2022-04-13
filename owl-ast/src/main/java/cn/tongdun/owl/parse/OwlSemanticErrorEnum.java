@@ -14,7 +14,8 @@ public enum OwlSemanticErrorEnum {
     NUMBER_TYPE_REQUIRED("This operation requires a number type, i.e. INT or DOUBLE. Found %s"),
     DIVIDE_ZERO("Dividing zero leads to undefined behaviour"),
     NON_OPERABLE_ARG_FOR_FUNCTION("None of provided args is operable for this function %s"),
-    WRONG_TYPE_FOR_FUNCTION("Function %s requires %s type, but %s is provided");
+    WRONG_TYPE_FOR_FUNCTION("Function %s requires %s type, but %s is provided"),
+    WRONG_TYPE_FOR_CONTEXT("Context %s requires %s type, but %s is provided");
     private final String errorMsg;
 
     OwlSemanticErrorEnum(String errorMsg) {

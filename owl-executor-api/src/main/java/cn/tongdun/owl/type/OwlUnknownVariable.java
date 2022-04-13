@@ -77,6 +77,9 @@ public class OwlUnknownVariable<T> extends OwlVariable implements Serializable {
     public BigDecimal getDoubleValue() {
         if (OwlType.DOUBLE.equals(this.getType())) {
             return value == null ? null : (BigDecimal) value;
+        } else if (OwlType.INT.equals(this.getType())) {
+            // Implicit cast
+            return value == null ? null : BigDecimal.valueOf((Long) value);
         }
         return null;
     }
@@ -92,6 +95,7 @@ public class OwlUnknownVariable<T> extends OwlVariable implements Serializable {
         if (OwlType.BOOLEAN.equals(this.getType())) {
             return value == null ? null : (Boolean) value;
         }
+        // We need return a null just because my direct dependent uses null as default value so we can keep the same semantics
         return null;
     }
 
@@ -120,6 +124,9 @@ public class OwlUnknownVariable<T> extends OwlVariable implements Serializable {
             return false;
         }
         OwlUnknownVariable<?> that = (OwlUnknownVariable<?>) o;
+        if (this.getType() != that.getType()) {
+            return false;
+        }
         if (this.value == null && that.value == null) {
             return true;
         } else if (this.value != null && that.value != null) {
