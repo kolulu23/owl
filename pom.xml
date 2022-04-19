@@ -13,6 +13,7 @@
         <module>owl-ast</module>
         <module>owl-executor-api</module>
         <module>owl-executor-impl</module>
+        <module>owl-benchmark</module>
     </modules>
 
     <properties>
@@ -68,6 +69,16 @@
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>1.7.30</version>
+            </dependency>
+            <dependency>
+                <groupId>org.openjdk.jmh</groupId>
+                <artifactId>jmh-core</artifactId>
+                <version>1.33</version>
+            </dependency>
+            <dependency>
+                <groupId>org.openjdk.jmh</groupId>
+                <artifactId>jmh-generator-annprocess</artifactId>
+                <version>1.33</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
