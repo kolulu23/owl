@@ -22,6 +22,12 @@ public class OwlIntVariable extends OwlUnknownVariable<Long> {
         this.value = value;
     }
 
+    public OwlIntVariable(String id, Long value) {
+        super(id);
+        this.type = OwlType.INT;
+        this.value = value;
+    }
+
     @Override
     public String toString() {
         return "OwlIntVariable{" +
