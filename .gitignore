@@ -11,6 +11,5 @@ buildNumber.properties
 .mvn/wrapper/maven-wrapper.jar
 .idea/
 .vscode/
-gen/
 resources/*.tokens
 .iml
