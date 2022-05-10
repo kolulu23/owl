@@ -12,6 +12,7 @@
     <description>A layer of abstraction over Owl DSL unit and execution context.</description>
 
     <artifactId>owl-executor-api</artifactId>
+    <version>${revision}</version>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>

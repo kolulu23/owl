@@ -12,7 +12,7 @@
     <description>Implementations of Owl's executors. Client may directly depends on this module.</description>
 
     <artifactId>owl-executor-impl</artifactId>
-
+    <version>${revision}</version>
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>

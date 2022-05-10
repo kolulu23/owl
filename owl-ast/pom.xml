@@ -12,6 +12,7 @@
     <description>AST handling, parseTree walking, syntax check listeners, expression evaluate visitors</description>
 
     <artifactId>owl-ast</artifactId>
+    <version>${revision}</version>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
