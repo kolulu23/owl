@@ -1,4 +1,4 @@
-# owl
+# Owl
 Owl is a DSL that evaluates simple expressions and statements.
 
 Owl uses ANTLR4 to generate parsers.
@@ -14,7 +14,7 @@ Here's a diagram of Owl's planned module design:
 - 从程序中解析入参字段和出参字段
 - 校验程序语法
 - 缓存
-- **安全问题**？
+- 安全检查
 
 ### 入参结构
 
