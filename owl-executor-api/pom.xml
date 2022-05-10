@@ -5,7 +5,8 @@
     <parent>
         <artifactId>owl</artifactId>
         <groupId>cn.tongdun</groupId>
-        <version>1.0.1</version>
+        <version>${revision}</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <description>A layer of abstraction over Owl DSL unit and execution context.</description>
