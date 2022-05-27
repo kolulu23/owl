@@ -9,7 +9,7 @@ package cn.tongdun.owl.example.groovy
 class CorrectGroovyDemo {
     public Map<String, String> run(Map<String, String> inputMap) {
         Map<String, String> outputMap = new HashMap<String, String>();
-        // TODO 请在此处补充需要实现的业务逻辑，结果值put入outputMap中。
+        // Business logic goes here ->
         def param1 = inputMap.get("param1")
         if (param1 == "A001") {
             outputMap.put("res", "2021");
