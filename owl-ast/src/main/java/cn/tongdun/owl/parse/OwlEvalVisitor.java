@@ -87,7 +87,13 @@ public class OwlEvalVisitor extends OwlBaseVisitor<OwlVariable> {
     }
 
     private boolean requiresKnownType(ParserRuleContext context, OwlVariable variable) {
-        return requiresKnownType(context, variable, OwlSemanticErrorEnum.VARIABLE_TYPE_UNKNOWN.getErrorMsg());
+        String msg = OwlSemanticErrorEnum.VARIABLE_TYPE_UNKNOWN.getErrorMsg();
+        if (variable == null) {
+            msg = String.format(msg, "null");
+        } else {
+            msg = String.format(msg, variable.getId());
+        }
+        return requiresKnownType(context, variable, msg);
     }
 
     private boolean requiresKnownType(ParserRuleContext context, OwlVariable variable, String customMsg) {

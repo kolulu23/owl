@@ -6,7 +6,7 @@ package cn.tongdun.owl.parse;
  */
 public enum OwlSemanticErrorEnum {
     VARIABLE_NOT_DEFINED("Using a undefined variable: "),
-    VARIABLE_TYPE_UNKNOWN("Variable is unknown, possibly declared but uninitialized."),
+    VARIABLE_TYPE_UNKNOWN("Variable %s is unknown, possibly declared but uninitialized."),
     GLOBAL_VAR_NOT_INIT("Using a uninitialized global variable: "),
     VARIABLE_ASSIGN_TO_WRONG_TYPE("Cannot assign value to variable %s, required type is %s but a %s type is provided."),
     ASSIGN_TO_UNKNOWN_VARIABLE("Trying to assign a value to a undefined or uninitialized variable %s."),
